@@ -63,7 +63,7 @@ nWarmup   = floor(nIter/2)
 nThin     = 1
 
 
-modelFile = './RLBart_0.stan'
+modelFile = './STLBart.stan'
 cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
@@ -84,4 +84,4 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/RLBart_0_MDD_13.Rdata")
+save(fit,file="fit_result/STLBart_MDD_13.Rdata")
