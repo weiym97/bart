@@ -11,5 +11,5 @@ y <- ypred * exp(rnorm(N,0,sigma))
 
 # Fit the model
 library("rstan")
-fit <- stan("non_linear_function_sample.stan",data=list(N=N,x=x,y=y),iter=100,chains=4)
+fit <- stan("non_linear_function_sample.stan",data=list(N=N,x=x,y=y),iter=1000,chains=4)
 print(fit,pars=c("a","b","sigma"))

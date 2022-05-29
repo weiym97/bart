@@ -239,7 +239,36 @@ class RLBart():
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 
-    #def compute_likelihood(self,Q_0, alpha, gamma, Lambda, tau,pumps,explode):
+    def compute_likelihood(self, Q_0, alpha, gamma, Lambda, tau, pumps, explosion, return_Q=True):
+        num_trial = len(pumps)
+        Q = Q_0
+        neg_log_likelihoods = np.zeros(num_trial)
+        if return_Q:
+            Q_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            neg_log_likelihood = 0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
+                else:
+                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
+            neg_log_likelihoods[i]=neg_log_likelihood
+            if explosion[i] == 0:
+                Q = self.accu_reward[j] - alpha * (self.accu_reward[j] - Q) + gamma
+            else:
+                if self.model_type == '1':
+                    Q = Q - Lambda * self.accu_reward[j]
+                elif self.model_type == '2':
+                    Q = Q + Lambda * min(self.accu_reward[j] - Q, 0)
+                else:
+                    raise ValueError('Invalid model type!')
+            if return_Q:
+                Q_history[i] = Q
+
+        if return_Q:
+            return neg_log_likelihoods, Q_history
+        else:
+            return neg_log_likelihoods
 
 
 class STLBart():
@@ -324,65 +353,6 @@ class STLDBart():
             return pumps.astype(np.int32), explode.astype(np.int32)
 
 
-def bart_generate_basic_info(config, save_dir):
-    save_dir = save_dir + config['trial_id'] + '/'
-    result = pd.read_excel(save_dir + 'result.xlsx')
-    result.drop(['trial', 'pumps', 'explosion'], axis=1, inplace=True)
-    result.drop_duplicates(inplace=True)
-    result.to_excel(save_dir + 'basic_info.xlsx', index=False)
-
-
-def bart_plot_stop_main(config, save_dir):
-    save_dir = save_dir + config['trial_id'] + '/'
-    result = pd.read_excel(save_dir + 'result.xlsx')
-    plot_dir = save_dir + 'plot_stop/'
-    if not os.path.exists(plot_dir):
-        os.makedirs(plot_dir)
-    max_subjID = int(max(result['SubjID']))
-
-    for subjID in range(1, max_subjID + 1):
-        subresult = result[result['SubjID'] == subjID]
-        subresult = subresult[subresult['explosion'] == 0]
-        plt.hist(subresult['pumps'], range=(0, config['max_pump'] - 1))
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=20)
-        plt.xlabel('Pump Number', fontsize=20)
-        plt.title('SubjectID ' + str(subjID), fontsize=25)
-        plt.savefig(plot_dir + 'subjID=' + str(subjID) + '.jpg')
-        plt.close()
-
-
-def bart_plot_pump_prob(config, save_dir):
-    save_dir = save_dir + config['trial_id'] + '/'
-    result = pd.read_excel(save_dir + 'result.xlsx')
-    plot_dir = save_dir + 'plot_pump_prob/'
-    if not os.path.exists(plot_dir):
-        os.makedirs(plot_dir)
-    max_subjID = int(max(result['SubjID']))
-
-    for subjID in range(1, max_subjID + 1):
-        subresult = result[result['SubjID'] == subjID]
-        subresult_succeed = subresult[subresult['explosion'] == 0]
-        subresult_fail = subresult[subresult['explosion'] == 1]
-        pumps_succeed = np.array(subresult_succeed['pumps'])
-        pumps_fail = np.array(subresult_fail['pumps'])
-
-        pumps = np.zeros(config['max_pump'] - 1)
-        no_pumps = np.zeros(config['max_pump'] - 1)
-        for i in range(config['max_pump'] - 1):
-            no_pumps[i] = np.sum(pumps_succeed == i + 1)
-            pumps[i] = np.sum(pumps_succeed > i + 1) + np.sum(pumps_fail == i + 1)
-        pump_prob = pumps / (pumps + no_pumps + 1e-8)
-        plt.plot(np.arange(1, config['max_pump']), pump_prob)
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=20)
-        plt.xlabel('Pump Number', fontsize=20)
-        plt.title('SubjectID ' + str(subjID) + ' : pump probability', fontsize=25)
-
-        plt.savefig(plot_dir + 'subjID=' + str(subjID) + '.jpg')
-        plt.close()
-
-
 if __name__ == '__main__':
     accu_reward = np.array([0.0, 0.0, 0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.0])
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])
@@ -442,12 +412,12 @@ if __name__ == '__main__':
     '''
 
     # Test for Four Parameter model
-    model = FourparamBart(max_pump,explode_prob,accu_reward)
+    model = FourparamBart(max_pump, explode_prob, accu_reward)
     phi = 0.9
     eta = 0.1
     gamma = 0.6
     tau = 8.0
-    pumps, explode = model.generate_data(phi,eta,gamma,tau)
+    pumps, explode = model.generate_data(phi, eta, gamma, tau)
     print(pumps)
     print('########################')
     print(explode)
