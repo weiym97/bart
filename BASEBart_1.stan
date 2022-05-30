@@ -73,6 +73,7 @@ model {
         }
         else{
           Q = Q - alpha[j] * r_accu[pumps[j,k]];
+        }
     }
   }
 }
@@ -97,9 +98,9 @@ generated quantities {
 
   { // Local section to save time and space
     for (j in 1:N) {
-
-      log_lik[j] = 0;
       real Q = Q_0[j];
+      log_lik[j] = 0;
+      
 
       for (k in 1:Tsubj[j]) {
         
@@ -113,6 +114,7 @@ generated quantities {
         }
         else{
           Q = Q - alpha[j] * r_accu[pumps[j,k]];
+        }
       }
     }
   }
