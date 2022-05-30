@@ -191,6 +191,84 @@ class NEWBart():
 
         return pumps.astype(np.int32), explode.astype(np.int32)
 
+class RLBart_0():
+    def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, model_type='1'):
+        self.max_pump = max_pump
+        self.explode_prob = explode_prob
+        self.accu_reward = accu_reward
+        self.reward = np.diff(accu_reward)
+        self.num_trial = num_trial
+        self.model_type = model_type
+
+    def generate_data(self, Q_0, alpha, Lambda, tau, return_Q=False):
+        pumps = np.zeros(self.num_trial)
+        explode = np.zeros(self.num_trial)
+        # Initialise subjective optimal pump reward
+        Q = Q_0
+        if return_Q:
+            Q_history = np.zeros(self.num_trial)
+        for i in range(self.num_trial):
+            burst = (self.explode_prob > np.random.uniform())
+            for j in range(self.max_pump):
+                # Subject probability of pump
+                p_pump = 1 / (1 + np.exp(tau * (self.accu_reward[j] - Q)))
+                pump = int(np.random.binomial(1, p_pump, 1)) > 0
+                if not pump:
+                    pumps[i] = j
+                    explode[i] = 0
+                    Q = self.accu_reward[j] - alpha * (self.accu_reward[j] - Q)
+                    if return_Q:
+                        Q_history[i] = Q
+                    break
+                elif burst[j]:
+                    pumps[i] = j + 1
+                    explode[i] = 1
+                    if self.model_type == '1':
+                        Q = Q - Lambda * self.accu_reward[j]
+                    elif self.model_type == '2':
+                        Q = Q + Lambda * min(self.accu_reward[j] - Q, 0)
+                    else:
+                        raise ValueError('Invalid model type!')
+                    if return_Q:
+                        Q_history[i] = Q
+                    break
+        if return_Q:
+            return pumps.astype(np.int32), explode.astype(np.int32), Q_history
+        else:
+            return pumps.astype(np.int32), explode.astype(np.int32)
+
+    def compute_likelihood(self, Q_0, alpha, Lambda, tau, pumps, explosion, return_Q=True):
+        num_trial = len(pumps)
+        Q = Q_0
+        neg_log_likelihoods = np.zeros(num_trial)
+        if return_Q:
+            Q_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            neg_log_likelihood = 0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
+                else:
+                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
+            neg_log_likelihoods[i] = neg_log_likelihood
+            if explosion[i] == 0:
+                Q = self.accu_reward[j] - alpha * (self.accu_reward[j] - Q)
+            else:
+                if self.model_type == '1':
+                    Q = Q - Lambda * self.accu_reward[j]
+                elif self.model_type == '2':
+                    Q = Q + Lambda * min(self.accu_reward[j] - Q, 0)
+                else:
+                    raise ValueError('Invalid model type!')
+            if return_Q:
+                Q_history[i] = Q
+
+        if return_Q:
+            return neg_log_likelihoods, Q_history
+        else:
+            return neg_log_likelihoods
+
+
 
 class RLBart():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, model_type='1'):
@@ -252,7 +330,7 @@ class RLBart():
                     neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
                 else:
                     neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (self.accu_reward[j] - Q))))
-            neg_log_likelihoods[i]=neg_log_likelihood
+            neg_log_likelihoods[i] = neg_log_likelihood
             if explosion[i] == 0:
                 Q = self.accu_reward[j] - alpha * (self.accu_reward[j] - Q) + gamma
             else:
@@ -310,6 +388,32 @@ class STLBart():
             return pumps.astype(np.int32), explode.astype(np.int32), omega_history
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
+
+    def compute_likelihood(self, omega_0, vwin, vloss, tau, pumps, explosion, return_omega=False):
+        num_trial = len(pumps)
+        neg_log_likelihoods = np.zeros(num_trial)
+        omega = omega_0
+        if return_omega:
+            omega_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            neg_log_likelihood = 0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump))))
+                else:
+                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump))))
+            neg_log_likelihoods[i] = neg_log_likelihood
+            if explosion[i] == 0:
+                omega = omega * (1 + vwin * j / self.max_pump)
+            else:
+                omega = omega * (1 - vloss * (1 - (j + 1) / self.max_pump))
+            if return_omega:
+                omega_history[i] = omega
+
+        if return_omega:
+            return neg_log_likelihoods, omega_history
+        else:
+            return neg_log_likelihoods
 
 
 class STLDBart():

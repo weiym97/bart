@@ -30,12 +30,28 @@ def compute_likelihood_main(config,data,params):
                 'pumps': pumps.tolist(),
                 'explosion':explosion.tolist(),
             }
-            print(result.keys())
-            print(result['neg_log_likelihood'])
-            print(result['Q_history'])
-            print(result['pumps'])
-            print(result['explosion'])
             with open('./analyze_result/'+config['model_name']+'_'+config['model_type']+'_'+str(subj)+'.json', 'w') as f:
+                json.dump(result, f)
+    elif config['model_name'] == 'STLBart':
+        model = STLBart(max_pump = config['max_pump'],
+                       explode_prob = config['explode_prob'],
+                       accu_reward = config['accu_reward'],
+                       )
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            omega_0 = float(params[params['subjID'] == subj]['omega_0'])
+            vwin = float(params[params['subjID'] == subj]['vwin'])
+            vloss = float(params[params['subjID'] == subj]['vloss'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            neg_log_likelihood,omega_history = model.compute_likelihood(omega_0,vwin,vloss,tau,pumps,explosion,return_omega=True)
+            result={
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
+                'omega_history': omega_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            with open('./analyze_result/'+config['model_name']+'_'+str(subj)+'.json', 'w') as f:
                 json.dump(result, f)
     else:
         raise ValueError('Model under development!')
@@ -45,7 +61,7 @@ if __name__ == '__main__':
     accu_reward = np.array([0.0, 0.0, 0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.0])
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])
     max_pump = 13
-
+    '''
     config = {
         'max_pump': max_pump,
         'accu_reward': accu_reward,
@@ -57,4 +73,32 @@ if __name__ == '__main__':
 
     data = pd.read_csv('data/MDD_13.txt',sep='\t')
     params=pd.read_csv('fit_result/RLBart_1_MDD_13.csv')
+    result = compute_likelihood_main(config,data,params)
+    '''
+
+    '''
+    config = {
+        'max_pump': max_pump,
+        'accu_reward': accu_reward,
+        'explode_prob': explode_prob,
+        'model_name': 'STLBart',
+    }
+
+
+    data = pd.read_csv('data/MDD_13.txt',sep='\t')
+    params=pd.read_csv('fit_result/STLBart_MDD_13.csv')
+    result = compute_likelihood_main(config,data,params)
+    '''
+
+    config = {
+        'max_pump': max_pump,
+        'accu_reward': accu_reward,
+        'explode_prob': explode_prob,
+        'model_name': 'RLBart_0',
+        'model_type': '1',
+    }
+
+
+    data = pd.read_csv('data/MDD_13.txt',sep='\t')
+    params=pd.read_csv('fit_result/RLBart_0_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
