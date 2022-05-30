@@ -45,9 +45,56 @@ def compute_likelihood_main(config,data,params):
             vloss = float(params[params['subjID'] == subj]['vloss'])
             tau = float(params[params['subjID'] == subj]['tau'])
             neg_log_likelihood,omega_history = model.compute_likelihood(omega_0,vwin,vloss,tau,pumps,explosion,return_omega=True)
+            print(subj)
+            print(np.mean(neg_log_likelihood))
             result={
                 'neg_log_likelihood':neg_log_likelihood.tolist(),
                 'omega_history': omega_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            with open('./analyze_result/'+config['model_name']+'_'+str(subj)+'.json', 'w') as f:
+                json.dump(result, f)
+    elif config['model_name'] == 'RLBart_0':
+        model = RLBart_0(max_pump = config['max_pump'],
+                       explode_prob = config['explode_prob'],
+                       accu_reward = config['accu_reward'],
+                       model_type = config['model_type'])
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            Q_0 = float(params[params['subjID'] == subj]['Q_0'])
+            alpha = float(params[params['subjID'] == subj]['alpha'])
+            Lambda = float(params[params['subjID'] == subj]['lambda'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            neg_log_likelihood,Q_history = model.compute_likelihood(Q_0,alpha,Lambda,tau,pumps,explosion,return_Q=True)
+            print(subj)
+            print(np.mean(neg_log_likelihood))
+            result={
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
+                'Q_history': Q_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            with open('./analyze_result/'+config['model_name']+'_'+config['model_type']+'_'+str(subj)+'.json', 'w') as f:
+                json.dump(result, f)
+    elif config['model_name'] == "FourparamBart":
+        model = FourparamBart(max_pump = config['max_pump'],
+                        explode_prob = config['explode_prob'],
+                        accu_reward = config['accu_reward'],
+                        )
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            phi = float(params[params['subjID'] == subj]['phi'])
+            eta = float(params[params['subjID'] == subj]['eta'])
+            gam = float(params[params['subjID'] == subj]['gam'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            neg_log_likelihood = model.compute_likelihood(phi,eta,gam,tau,pumps,explosion)
+            print(subj)
+            print(np.mean(neg_log_likelihood))
+            result={
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
                 'pumps': pumps.tolist(),
                 'explosion':explosion.tolist(),
             }
@@ -76,7 +123,7 @@ if __name__ == '__main__':
     result = compute_likelihood_main(config,data,params)
     '''
 
-    '''
+
     config = {
         'max_pump': max_pump,
         'accu_reward': accu_reward,
@@ -88,8 +135,8 @@ if __name__ == '__main__':
     data = pd.read_csv('data/MDD_13.txt',sep='\t')
     params=pd.read_csv('fit_result/STLBart_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
-    '''
 
+    '''
     config = {
         'max_pump': max_pump,
         'accu_reward': accu_reward,
@@ -98,7 +145,21 @@ if __name__ == '__main__':
         'model_type': '1',
     }
 
-
     data = pd.read_csv('data/MDD_13.txt',sep='\t')
     params=pd.read_csv('fit_result/RLBart_0_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
+    '''
+
+    '''
+    config = {
+        'max_pump': max_pump,
+        'accu_reward': accu_reward,
+        'explode_prob': explode_prob,
+        'model_name': 'FourparamBart',
+        'model_type': '1',
+    }
+
+    data = pd.read_csv('data/MDD_13.txt',sep='\t')
+    params=pd.read_csv('fit_result/FourparamBart_MDD_13.csv')
+    result = compute_likelihood_main(config,data,params)
+    '''

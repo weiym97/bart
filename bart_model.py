@@ -43,6 +43,27 @@ class FourparamBart():
             n_pumps += pumps[i]
         return pumps.astype(np.int32), explode.astype(np.int32)
 
+    def compute_likelihood(self, phi, eta, gamma, tau,pumps,explosion):
+        num_trial = len(pumps)
+        neg_log_likelihoods=np.zeros(num_trial)
+        n_success = 0
+        n_pumps = 0
+        for i in range(num_trial):
+            # Calculate the optimal number of pumps
+            p_burst = 1 - (phi + eta * n_success) / (1 + eta * n_pumps)
+            optimal_pump = -gamma / np.log(1 - p_burst)
+            neg_log_likelihood=0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - p_pump)
+                else:
+                    neg_log_likelihood -= np.log(p_pump)
+            neg_log_likelihoods[i] = neg_log_likelihood
+            n_success += pumps[i] - explosion[i]
+            n_pumps += pumps[i]
+        return neg_log_likelihoods
+
 
 class EWBart():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, const_subexplode_prob=True):
