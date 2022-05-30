@@ -21,14 +21,14 @@ def RL_model_diagram(alpha,gamma,r_k,Q_k):
 
 
 if __name__ == '__main__':
-    '''
+
     alpha = np.array([-0.25,0.0,0.25,0.5,0.75,1.0,1.25])
     gamma = np.array([-0.25,0.0,0.25])
     r_k = np.array([0.15,0.35,0.55,0.75,0.95,1.15,1.35])
     Q_k=0.75
     RL_model_diagram(alpha,gamma,r_k,Q_k)
-    '''
 
+    '''
     accu_reward = np.array([0.0, 0.0, 0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.0])
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])
     max_pump = 13
@@ -42,6 +42,7 @@ if __name__ == '__main__':
     print(pumps)
     print('###########')
     print(explode)
+    '''
     '''
     alphas=np.array([0.0,0.25,0.5,0.75,1.0,1.25])
     for alpha in alphas:
