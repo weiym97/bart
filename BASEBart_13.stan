@@ -29,13 +29,12 @@ transformed data{
 
 parameters {
   // Group-level parameters
-  vector[4] mu_pr;
-  vector<lower=0>[4] sigma;
+  vector[3] mu_pr;
+  vector<lower=0>[3] sigma;
 
   // Normally distributed error for Matt trick
   vector[N] omega_0_pr;
   vector[N] alpha_pr;
-  vector[N] lambda_pr;
   vector[N] tau_pr;
 }
 
@@ -43,13 +42,11 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0>[N] omega_0;
   vector<lower=0>[N] alpha;
-  vector<lower=0>[N] lambda;
   vector<lower=0>[N] tau;
 
   omega_0 = exp(mu_pr[1] + sigma[1] * omega_0_pr);
   alpha = exp(mu_pr[2] + sigma[2] * alpha_pr);
-  lambda = exp(mu_pr[3] + sigma[3] * lambda_pr);
-  tau = exp(mu_pr[4] + sigma[4] * tau_pr);
+  tau = exp(mu_pr[3] + sigma[3] * tau_pr);
 }
 
 model {
@@ -59,7 +56,6 @@ model {
 
   omega_0_pr ~ normal(0, 1);
   alpha_pr ~ normal(0, 1);
-  lambda_pr ~ normal(0, 1);
   tau_pr ~ normal(0, 1);
 
   // Likelihood
@@ -73,10 +69,10 @@ model {
         d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l));
       }
       if (explosion[j,k] ==0){
-          omega = omega + alpha[j] * inv(P) / k;
+          omega = omega + alpha[j] * inv(P);
         }
         else{
-          omega = omega - lambda[j] * inv(P) / k;
+          omega = omega - alpha[j] * inv(P);
         }
     }
   }
@@ -84,10 +80,9 @@ model {
 
 generated quantities {
   // Actual group-level mean
-  real<lower=0> mu_Q_0 = exp(mu_pr[1]);
+  real<lower=0> mu_omega_0 = exp(mu_pr[1]);
   real<lower=0> mu_alpha = exp(mu_pr[2]);
-  real<lower=0> mu_lambda = exp(mu_pr[3]);
-  real<lower=0> mu_tau = exp(mu_pr[4]);
+  real<lower=0> mu_tau = exp(mu_pr[3]);
 
   // Log-likelihood for model fit
   real log_lik[N];
@@ -112,13 +107,13 @@ generated quantities {
 
         for (l in 1:L[j,k]) {
           log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega * P - l));
-          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l));
+          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P -l));
         }
         if (explosion[j,k] ==0){
-          omega = omega + alpha[j] * inv(P) / k;
+          omega = omega + alpha[j] * inv(P);
         }
         else{
-          omega = omega - lambda[j] * inv(P) / k;
+          omega = omega - alpha[j] * inv(P);
         }
       }
     }
