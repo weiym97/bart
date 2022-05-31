@@ -73,10 +73,10 @@ model {
         d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l));
       }
       if (explosion[j,k] ==0){
-          omega = omega + alpha[j] * pumps[j,k] * inv(P);
+          omega = omega + alpha[j] * pumps[j,k] * inv(P) / k;
         }
         else{
-          omega = omega - lambda[j] * pumps[j,k] * inv(P);
+          omega = omega - lambda[j] * pumps[j,k] * inv(P) / k;
         }
     }
   }
@@ -115,10 +115,10 @@ generated quantities {
           y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l));
         }
         if (explosion[j,k] ==0){
-          omega = omega + alpha[j] * pumps[j,k] * inv(P);
+          omega = omega + alpha[j] * pumps[j,k] * inv(P) / k;
         }
         else{
-          omega = omega - lambda[j] * pumps[j,k] * inv(P);
+          omega = omega - lambda[j] * pumps[j,k] * inv(P) / k;
         }
       }
     }
