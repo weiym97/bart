@@ -75,7 +75,7 @@ model {
       }
       if (explosion[j,k] ==0){
           Q = Q + alpha[j] * r_accu[pumps[j,k] + 1];
-          Loss_aver = r_accu[pumps[j,k] + 1]
+          Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
           Q = Q - alpha[j] * r_accu[pumps[j,k]];
@@ -120,7 +120,7 @@ generated quantities {
         }
         if (explosion[j,k] ==0){
           Q = Q + alpha[j] * r_accu[pumps[j,k] + 1];
-          Loss_aver = r_accu[pumps[j,k] + 1]
+          Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
           Q = Q - alpha[j] * r_accu[pumps[j,k]];
