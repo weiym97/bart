@@ -123,6 +123,36 @@ def compute_likelihood_main(config,data,params):
             }
             results.append(pd.DataFrame(result))
         pd.concat(results).to_excel('analyze_result/BASEBart_14.xlsx')
+    elif config['model_name'] == 'BASEBart_30':
+        model = BASEBart_30(max_pump = config['max_pump'],
+                            explode_prob = config['explode_prob'],
+                            accu_reward = config['accu_reward'],
+                            )
+        subjID =[1542]
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            omega_0 = float(params[params['subjID'] == subj]['omega_0'])
+            alpha = float(params[params['subjID'] == subj]['alpha'])
+            beta = float(params[params['subjID'] == subj]['beta'])
+            Lambda = float(params[params['subjID'] == subj]['lambda'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            omega_0 = 0.30
+            alpha = 0.5
+            beta = 0.5
+            Lambda = -0.3
+            tau = 0.73
+            neg_log_likelihood,omega_history,omega_loss_aver_history = model.compute_likelihood(omega_0, alpha, beta, Lambda,tau,pumps,explosion,return_omega=True)
+            result={
+                'subjID':subj,
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
+                'omega_history': omega_history.tolist(),
+                'omega_loss_aver_history': omega_loss_aver_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            results.append(pd.DataFrame(result))
+        pd.concat(results).to_excel('analyze_result/BASEBart_30_1542.xlsx')
     else:
         raise ValueError('Model under development!')
 
@@ -184,7 +214,7 @@ if __name__ == '__main__':
     params=pd.read_csv('fit_result/FourparamBart_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
     '''
-
+    '''
     config = {
         'max_pump': max_pump,
         'accu_reward': accu_reward,
@@ -195,4 +225,15 @@ if __name__ == '__main__':
 
     data = pd.read_csv('data/MDD_13.txt',sep='\t')
     params=pd.read_csv('fit_result/BASEBart_14_MDD_13.csv')
+    result = compute_likelihood_main(config,data,params)
+    '''
+    config = {
+        'max_pump': max_pump,
+        'accu_reward': accu_reward,
+        'explode_prob': explode_prob,
+        'model_name': 'BASEBart_30',
+    }
+
+    data = pd.read_csv('data/MDD_13.txt',sep='\t')
+    params=pd.read_csv('fit_result/BASEBart_30_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
