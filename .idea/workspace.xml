@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/BASEBart_20.stan" beforeDir="false" afterPath="$PROJECT_DIR$/BASEBart_20.stan" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_fit_main.R" beforeDir="false" afterPath="$PROJECT_DIR$/bart_fit_main.R" afterDir="false" />
-    </list>
+    <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -110,7 +107,7 @@
       <option name="presentableId" value="Default" />
       <updated>1653805523410</updated>
       <workItem from="1653805528810" duration="7239000" />
-      <workItem from="1653819241878" duration="31598000" />
+      <workItem from="1653819241878" duration="31602000" />
     </task>
     <servers />
   </component>
