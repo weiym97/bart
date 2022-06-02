@@ -130,4 +130,3 @@ generated quantities {
     }
   }
 }
-
