@@ -43,12 +43,12 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0>[N] Q_0;
   vector<lower=0>[N] alpha;
-  vector[N] lambda;
+  vector<lower=0>[N] lambda;
   vector<lower=0>[N] tau;
 
   Q_0 = exp(mu_pr[1] + sigma[1] * Q_0_pr);
   alpha = exp(mu_pr[2] + sigma[2] * alpha_pr);
-  lambda = mu_pr[3] + sigma[3] * lambda_pr;
+  lambda = exp(mu_pr[3] + sigma[3] * lambda_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
 }
 
@@ -74,11 +74,11 @@ model {
         d[j, k, l] ~ bernoulli_logit(tau[j] * (Q - r_accu[l] + lambda[j] * Loss_aver));
       }
       if (explosion[j,k] ==0){
-          Q = Q + alpha[j] * r_accu[pumps[j,k] + 1];
+          Q = Q + alpha[j] * r_accu[pumps[j,k] + 1] / k;
           Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
-          Q = Q - alpha[j] * r_accu[pumps[j,k]];
+          Q = Q - alpha[j] * r_accu[pumps[j,k]] / k;
           Loss_aver = 0;
         }
     }
@@ -89,7 +89,7 @@ generated quantities {
   // Actual group-level mean
   real<lower=0> mu_Q_0 = exp(mu_pr[1]);
   real<lower=0> mu_alpha = exp(mu_pr[2]);
-  real<lower=0> mu_lambda = mu_pr[3];
+  real<lower=0> mu_lambda = exp(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
 
   // Log-likelihood for model fit
@@ -119,11 +119,11 @@ generated quantities {
           y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (Q - r_accu[l] + lambda[j] * Loss_aver));
         }
         if (explosion[j,k] ==0){
-          Q = Q + alpha[j] * r_accu[pumps[j,k] + 1];
+          Q = Q + alpha[j] * r_accu[pumps[j,k] + 1] / k;
           Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
-          Q = Q - alpha[j] * r_accu[pumps[j,k]];
+          Q = Q - alpha[j] * r_accu[pumps[j,k]] / k;
           Loss_aver = 0;
         }
       }
