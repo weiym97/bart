@@ -43,12 +43,12 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0>[N] omega_0;
   vector<lower=0>[N] alpha;
-  vector[N] lambda;
+  vector<lower=0>[N] lambda;
   vector<lower=0>[N] tau;
 
   omega_0 = exp(mu_pr[1] + sigma[1] * omega_0_pr);
   alpha = exp(mu_pr[2] + sigma[2] * alpha_pr);
-  lambda = mu_pr[3] + sigma[3] * lambda_pr;
+  lambda = exp(mu_pr[3] + sigma[3] * lambda_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
 }
 
@@ -65,21 +65,18 @@ model {
   // Likelihood
   for (j in 1:N) {
     real omega = omega_0[j];
-    real Loss_aver = 0;
 
     for (k in 1:Tsubj[j]) {
 
       // Calculate likelihood with bernoulli distribution
       for (l in 1:L[j,k]){
-        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l + lambda[j] * Loss_aver));
+        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l));
       }
       if (explosion[j,k] ==0){
           omega = omega + alpha[j] * pumps[j,k] * inv(P);
-          Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
-          omega = omega - alpha[j] * pumps[j,k] * inv(P);
-          Loss_aver = 0;
+          omega = omega - lambda[j] * pumps[j,k] * inv(P);
         }
     }
   }
@@ -87,9 +84,9 @@ model {
 
 generated quantities {
   // Actual group-level mean
-  real<lower=0> mu_omega_0 = exp(mu_pr[1]);
+  real<lower=0> mu_Q_0 = exp(mu_pr[1]);
   real<lower=0> mu_alpha = exp(mu_pr[2]);
-  real mu_lambda = mu_pr[3];
+  real<lower=0> mu_lambda = exp(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
 
   // Log-likelihood for model fit
@@ -107,7 +104,6 @@ generated quantities {
   { // Local section to save time and space
     for (j in 1:N) {
       real omega = omega_0[j];
-      real Loss_aver = 0;
       log_lik[j] = 0;
       
 
@@ -115,16 +111,14 @@ generated quantities {
         
 
         for (l in 1:L[j,k]) {
-          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega * P - l + lambda[j] * Loss_aver));
-          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P -l + lambda[j] * Loss_aver));
+          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega * P - l));
+          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l));
         }
         if (explosion[j,k] ==0){
           omega = omega + alpha[j] * pumps[j,k] * inv(P);
-          Loss_aver = r_accu[pumps[j,k] + 1];
         }
         else{
-          omega = omega - alpha[j] * pumps[j,k] * inv(P);
-          Loss_aver = 0;
+          omega = omega - lambda[j] * pumps[j,k] * inv(P);
         }
       }
     }
