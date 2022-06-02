@@ -29,14 +29,15 @@ transformed data{
 
 parameters {
   // Group-level parameters
-  vector[5] mu_pr;
-  vector<lower=0>[5] sigma;
+  vector[6] mu_pr;
+  vector<lower=0>[6] sigma;
 
   // Normally distributed error for Matt trick
   vector[N] omega_0_pr;
   vector[N] alpha_pr;
   vector[N] beta_pr;
   vector[N] lambda_pr;
+  vector[N] theta_pr;
   vector[N] tau_pr;
 }
 
@@ -46,13 +47,15 @@ transformed parameters {
   vector<lower=0>[N] alpha;
   vector<lower=0>[N] beta;
   vector[N] lambda;
+  vector<lower=0,upper=1>[N] theta;
   vector<lower=0>[N] tau;
 
   omega_0 = exp(mu_pr[1] + sigma[1] * omega_0_pr);
   alpha = exp(mu_pr[2] + sigma[2] * alpha_pr);
   beta = exp(mu_pr[3] + sigma[3] * beta_pr);
   lambda = mu_pr[4] + sigma[4] * lambda_pr;
-  tau = exp(mu_pr[5] + sigma[5] * tau_pr);
+  theta = Phi_approx(mu_pr[5] + sigma[5] * theta_pr);
+  tau = exp(mu_pr[6] + sigma[6] * tau_pr);
 }
 
 model {
@@ -64,6 +67,7 @@ model {
   alpha_pr ~ normal(0, 1);
   beta_pr ~ normal(0, 1);
   lambda_pr ~ normal(0, 1);
+  theta_pr ~ normal(0, 1);
   tau_pr ~ normal(0, 1);
 
   // Likelihood
@@ -79,11 +83,11 @@ model {
       }
       if (explosion[j,k] ==0){
           omega = omega + alpha[j] * pumps[j,k] * inv(P) / k;
-          Loss_aver = r_accu[pumps[j,k] + 1];
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
         }
         else{
           omega = omega - beta[j] * pumps[j,k] * inv(P) / k;
-          Loss_aver = 0;
+          Loss_aver = (1 - theta[j]) * Loss_aver;
         }
     }
   }
@@ -95,7 +99,8 @@ generated quantities {
   real<lower=0> mu_alpha = exp(mu_pr[2]);
   real<lower=0> mu_beta = exp(mu_pr[3]);
   real mu_lambda = mu_pr[4];
-  real<lower=0> mu_tau = exp(mu_pr[5]);
+  real<lower=0,upper=1> mu_theta = Phi_approx(mu_pr[5]);
+  real<lower=0> mu_tau = exp(mu_pr[6]);
 
   // Log-likelihood for model fit
   real log_lik[N];
@@ -125,11 +130,11 @@ generated quantities {
         }
         if (explosion[j,k] ==0){
           omega = omega + alpha[j] * pumps[j,k] * inv(P) / k;
-          Loss_aver = r_accu[pumps[j,k] + 1];
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
         }
         else{
           omega = omega - beta[j] * pumps[j,k] * inv(P) / k;
-          Loss_aver = 0;
+          Loss_aver = (1 - theta[j]) * Loss_aver;
         }
       }
     }
