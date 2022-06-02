@@ -79,11 +79,11 @@ model {
 
       // Calculate likelihood with bernoulli distribution
       for (l in 1:L[j,k]){
-        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P + lambda[j] * Loss_aver - l));
+        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l +  lambda[j] * Loss_aver));
       }
       if (explosion[j,k] ==0){
           omega = omega + alpha[j] * inv(P);
-          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k]+1] - Loss_aver);
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
         }
         else{
           omega = omega - beta[j] * inv(P);
@@ -99,7 +99,7 @@ generated quantities {
   real<lower=0> mu_alpha = exp(mu_pr[2]);
   real<lower=0> mu_beta = exp(mu_pr[3]);
   real mu_lambda = mu_pr[4];
-  real<lower=0,upper=1> mu_theta = mu_pr[5];
+  real<lower=0,upper=1> mu_theta = Phi_approx(mu_pr[5]);
   real<lower=0> mu_tau = exp(mu_pr[6]);
 
   // Log-likelihood for model fit
@@ -125,12 +125,12 @@ generated quantities {
         
 
         for (l in 1:L[j,k]) {
-          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega * P + lambda[j] * Loss_aver - l));
-          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P + lambda[j] * Loss_aver - l));
+          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega * P - l + lambda[j] * Loss_aver));
+          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l + lambda[j] * Loss_aver));
         }
         if (explosion[j,k] ==0){
           omega = omega + alpha[j] * inv(P);
-          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k]+1] - Loss_aver);
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
         }
         else{
           omega = omega - beta[j] * inv(P);
