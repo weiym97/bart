@@ -94,7 +94,7 @@ generated quantities {
   real<lower=0> mu_Q_0 = exp(mu_pr[1]);
   real<lower=0> mu_alpha = exp(mu_pr[2]);
   real<lower=0> mu_beta = exp(mu_pr[3]);
-  real<lower=0> mu_lambda = exp(mu_pr[4]);
+  real mu_lambda = mu_pr[4];
   real<lower=0> mu_tau = exp(mu_pr[5]);
 
   // Log-likelihood for model fit

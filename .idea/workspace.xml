@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_analysis.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BASEBart_20.stan" beforeDir="false" afterPath="$PROJECT_DIR$/BASEBart_20.stan" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bart_fit_main.R" beforeDir="false" afterPath="$PROJECT_DIR$/bart_fit_main.R" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
