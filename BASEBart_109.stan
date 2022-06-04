@@ -82,10 +82,7 @@ model {
         d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l -  lambda[j] * Loss_aver));
       }
       if (explosion[j,k] ==0){
-        if (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)>0)
-          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)- Loss_aver);
-        else
-          Loss_aver = (1 - theta[j]) * Loss_aver;
+        Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
         omega = omega + alpha[j] / (1 + exp(-beta[j] * (pumps[j,k] - omega * P))) * inv(P);
         }
         else{
@@ -133,10 +130,7 @@ generated quantities {
           y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l - lambda[j] * Loss_aver));
         }
         if (explosion[j,k] ==0){
-          if (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)>0)
-            Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)- Loss_aver);
-          else
-            Loss_aver = (1 - theta[j]) * Loss_aver;
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
           omega = omega + alpha[j] / (1 + exp(-beta[j] * (pumps[j,k] - omega * P))) * inv(P);
         }
         else{
