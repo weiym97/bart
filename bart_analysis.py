@@ -153,6 +153,33 @@ def compute_likelihood_main(config,data,params):
             }
             results.append(pd.DataFrame(result))
         pd.concat(results).to_excel('analyze_result/BASEBart_30_1542.xlsx')
+    elif config['model_name'] == 'BASEBART_106':
+        model = BASEBart_106(max_pump = config['max_pump'],
+                            explode_prob = config['explode_prob'],
+                            accu_reward = config['accu_reward'],
+                            )
+        #subjID =[1542]
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            omega_0 = float(params[params['subjID'] == subj]['omega_0'])
+            alpha = float(params[params['subjID'] == subj]['alpha'])
+            beta = float(params[params['subjID'] == subj]['beta'])
+            Lambda = float(params[params['subjID'] == subj]['lambda'])
+            theta = float(params[params['subjID'] == subj]['theta'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            neg_log_likelihood,omega_history,omega_loss_aver_history = model.compute_likelihood(omega_0, alpha, beta, Lambda,tau,pumps,explosion,return_omega=True)
+            result={
+                'subjID':subj,
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
+                'omega_history': omega_history.tolist(),
+                'omega_loss_aver_history': omega_loss_aver_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            results.append(pd.DataFrame(result))
+        pd.concat(results).to_excel('analyze_result/BASEBart_106_1542.xlsx')
+
     else:
         raise ValueError('Model under development!')
 

@@ -82,7 +82,7 @@ model {
         d[j, k, l] ~ bernoulli_logit(tau[j] * (omega * P - l -  lambda[j] * Loss_aver));
       }
       if (explosion[j,k] ==0){
-        Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*omega^2-0.0988012*omega+0.02832168)- Loss_aver);
+        Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)- Loss_aver);
         if (pumps[j,k] * inv(P)> omega)
             omega = omega + alpha[j] * inv(P);
         }
@@ -132,7 +132,7 @@ generated quantities {
           y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega * P - l - lambda[j] * Loss_aver));
         }
         if (explosion[j,k] ==0){
-          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*omega^2-0.0988012*omega+0.02832168)- Loss_aver);
+          Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - (0.04355644*(omega * P)^2-0.0988012*omega * P+0.02832168)- Loss_aver);
           if (pumps[j,k] * inv(P) > omega)
             omega = omega + alpha[j] * inv(P);
           }

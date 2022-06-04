@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def reward_function(x):
+    return 0.04355644*x**2-0.0988012*x+0.02832168
 
 class FourparamBart():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
@@ -210,6 +212,85 @@ class BASEBart_30():
             return neg_log_likelihoods, omega_history,omega_loss_aver_history
         else:
             return neg_log_likelihoods
+
+class BASEBart_106():
+    def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
+        self.max_pump = max_pump
+        self.explode_prob = explode_prob
+        self.accu_reward = accu_reward
+        self.reward = np.diff(accu_reward)
+        self.num_trial = num_trial
+
+    def generate_data(self, omega_0, alpha,beta, Lambda, theta, tau, return_omega=False):
+        pumps = np.zeros(self.num_trial)
+        explode = np.zeros(self.num_trial)
+        # Initialise subjective optimal pump reward
+        omega = omega_0
+        Loss_aver = 0
+        if return_omega:
+            omega_history = np.zeros(self.num_trial)
+            omega_loss_aver_history = np.zeros(self.num_trial)
+        for i in range(self.num_trial):
+            burst = (self.explode_prob > np.random.uniform())
+            if return_omega:
+                omega_history[i] = omega * self.max_pump
+                omega_loss_aver_history[i] = omega * self.max_pump - Lambda * Loss_aver
+            for j in range(self.max_pump):
+                # Subject probability of pump
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver)))
+                pump = int(np.random.binomial(1, p_pump, 1)) > 0
+                if not pump:
+                    pumps[i] = j
+                    explode[i] = 0
+                    if j / self.max_pump > omega:
+                        omega = omega + alpha / self.max_pump
+                    Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega) - Loss_aver)
+                    break
+                elif burst[j]:
+                    pumps[i] = j + 1
+                    explode[i] = 1
+                    if (j + 1) / self.max_pump < omega:
+                        omega = omega - beta / self.max_pump
+                    Loss_aver = (1 - theta) * Loss_aver
+                    break
+        if return_omega:
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history,omega_loss_aver_history
+        else:
+            return pumps.astype(np.int32), explode.astype(np.int32)
+
+    def compute_likelihood(self, omega_0, alpha, beta,Lambda, theta, tau, pumps, explosion, return_omega=False):
+        num_trial = len(pumps)
+        neg_log_likelihoods = np.zeros(num_trial)
+        omega = omega_0
+        Loss_aver = 0
+        if return_omega:
+            omega_history = np.zeros(num_trial)
+            omega_loss_aver_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            neg_log_likelihood = 0
+            if return_omega:
+                omega_history[i] = omega * self.max_pump
+                omega_loss_aver_history[i] = omega * self.max_pump - Lambda * Loss_aver
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
+                else:
+                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
+            neg_log_likelihoods[i] = neg_log_likelihood
+            if explosion[i] == 0:
+                if j / self.max_pump > omega:
+                    omega = omega + alpha / self.max_pump
+                Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega) - Loss_aver)
+            else:
+                if (j + 1) / self.max_pump < omega:
+                    omega = omega - beta / self.max_pump
+                Loss_aver = (1 - theta) * Loss_aver
+
+        if return_omega:
+            return neg_log_likelihoods, omega_history,omega_loss_aver_history
+        else:
+            return neg_log_likelihoods
+
 
 
 class EWBart():
