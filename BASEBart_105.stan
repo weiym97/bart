@@ -83,12 +83,12 @@ model {
       }
       if (explosion[j,k] ==0){
         Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
-        if (pumps[j,k] > omega)
+        if (pumps[j,k] * inv(P) > omega)
             omega = omega + alpha[j] * inv(P);
         }
         else{
           Loss_aver = (1 - theta[j]) * Loss_aver;
-          if (pumps[j,k] < omega)
+          if (pumps[j,k] * inv(P)< omega)
              omega = omega - beta[j] * inv(P);
           
         }
@@ -133,12 +133,12 @@ generated quantities {
         }
         if (explosion[j,k] ==0){
           Loss_aver = Loss_aver + theta[j] * (r_accu[pumps[j,k] + 1] - Loss_aver);
-          if (pumps[j,k] > omega)
+          if (pumps[j,k] * inv(P)> omega)
             omega = omega + alpha[j] * inv(P);
           }
         else{
           Loss_aver = (1 - theta[j]) * Loss_aver;
-          if (pumps[j,k] < omega)
+          if (pumps[j,k] * inv(P) < omega)
              omega = omega - beta[j] * inv(P);
           
         }
