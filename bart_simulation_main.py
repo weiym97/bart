@@ -67,7 +67,7 @@ if __name__ == '__main__':
     accu_reward = np.array([0.0, 0.0, 0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.0])
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])
     max_pump = 13
-
+    '''
     model = BASEBart_107(max_pump=max_pump,
                          accu_reward=accu_reward,
                          explode_prob=explode_prob)
@@ -93,3 +93,31 @@ if __name__ == '__main__':
     print(result)
     print('######################')
     print(np.average(pumps))
+    '''
+    model = BASEBart_110(max_pump=max_pump,
+                         accu_reward=accu_reward,
+                         explode_prob=explode_prob)
+    phi = 0.9
+    eta = 0.01
+    gamma = 0.4
+    Lambda = 15.0
+    theta = 0.8
+    tau = 4.0
+    pumps,explode,omega_history,omega_loss_averse_history = model.generate_data(phi=phi,
+                                                                                eta=eta,
+                                                                                gamma=gamma,
+                                                                                Lambda=Lambda,
+                                                                                theta=theta,
+                                                                                tau=tau,
+                                                                                return_omega = True
+                                                                                )
+    result= pd.DataFrame({
+        'pumps':pumps,
+        'explode':explode,
+        'omega_history':omega_history,
+        'omega_loss_averse_history':omega_loss_averse_history,
+    })
+    print(result)
+    print('######################')
+    print(np.average(pumps))
+
