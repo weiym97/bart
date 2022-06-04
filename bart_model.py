@@ -213,7 +213,7 @@ class BASEBart_30():
         else:
             return neg_log_likelihoods
 
-class BASEBart_106():
+class BASEBart_107():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
         self.max_pump = max_pump
         self.explode_prob = explode_prob
@@ -242,16 +242,18 @@ class BASEBart_106():
                 if not pump:
                     pumps[i] = j
                     explode[i] = 0
-                    if j / self.max_pump > omega:
-                        omega = omega + alpha / self.max_pump
-                    Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega) - Loss_aver)
+                    Loss_aver = Loss_aver + theta * (max(self.accu_reward[j] - reward_function(omega * self.max_pump),0) - Loss_aver)
+                    #if (j + 1) / self.max_pump > omega:
+                    #    omega = omega + alpha / self.max_pump
+                    omega = omega + alpha  / (1 + np.exp(-beta * (j - omega * self.max_pump)))
                     break
                 elif burst[j]:
                     pumps[i] = j + 1
                     explode[i] = 1
-                    if (j + 1) / self.max_pump < omega:
-                        omega = omega - beta / self.max_pump
                     Loss_aver = (1 - theta) * Loss_aver
+                    #if (j + 1) / self.max_pump < omega:
+                    #    omega = omega - beta / self.max_pump
+                    omega = omega - alpha / (1 + np.exp(-beta * (omega * self.max_pump - (j + 1))))
                     break
         if return_omega:
             return pumps.astype(np.int32), explode.astype(np.int32), omega_history,omega_loss_aver_history
@@ -278,13 +280,17 @@ class BASEBart_106():
                     neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
             neg_log_likelihoods[i] = neg_log_likelihood
             if explosion[i] == 0:
-                if j / self.max_pump > omega:
-                    omega = omega + alpha / self.max_pump
-                Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega) - Loss_aver)
+                Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega * self.max_pump) - Loss_aver)
+                #if (j + 1) / self.max_pump > omega:
+                #    omega = omega + alpha / self.max_pump
+                omega = omega + alpha  / (1 + np.exp(beta * (j - omega * self.max_pump)))
+
             else:
-                if (j + 1) / self.max_pump < omega:
-                    omega = omega - beta / self.max_pump
                 Loss_aver = (1 - theta) * Loss_aver
+                #if (j + 1) / self.max_pump < omega:
+                #    omega = omega - beta / self.max_pump
+                omega = omega - alpha / (1 + np.exp(beta * (omega * self.max_pump - (j + 1))))
+
 
         if return_omega:
             return neg_log_likelihoods, omega_history,omega_loss_aver_history

@@ -68,15 +68,15 @@ if __name__ == '__main__':
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])
     max_pump = 13
 
-    model = BASEBart_106(max_pump=max_pump,
+    model = BASEBart_107(max_pump=max_pump,
                          accu_reward=accu_reward,
                          explode_prob=explode_prob)
     omega_0 = 0.45
-    alpha = 0.3
-    beta = 0.3
+    alpha = 0.05
+    beta = 10.0
     theta = 0.8
-    Lambda = 0.2
-    tau = 2.0
+    Lambda = 100.0
+    tau = 4.0
     pumps,explode,omega_history,omega_loss_averse_history = model.generate_data(omega_0=omega_0,
                                                                                 alpha=alpha,
                                                                                 beta=beta,
@@ -91,3 +91,5 @@ if __name__ == '__main__':
         'omega_loss_averse_history':omega_loss_averse_history,
     })
     print(result)
+    print('######################')
+    print(np.average(pumps))
