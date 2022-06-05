@@ -96,7 +96,7 @@ model {
 
 generated quantities {
   // Actual group-level mean
-  real<lower=0> mu_Q_0 = exp(mu_pr[1]);
+  real<lower=0> mu_omega_0 = exp(mu_pr[1]);
   real<lower=0> mu_alpha = exp(mu_pr[2]);
   real<lower=0> mu_beta = exp(mu_pr[3]);
   real<lower=0> mu_lambda = exp(mu_pr[4]);
