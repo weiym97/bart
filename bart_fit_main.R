@@ -83,4 +83,4 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/BASEBart_111_Repeat_1_MDD_13.Rdata")
+save(fit,file="fit_result/BASEBart_111_Repeat_2_MDD_13.Rdata")
