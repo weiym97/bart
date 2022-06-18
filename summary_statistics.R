@@ -1,5 +1,9 @@
+rm(list=ls())
+args <- commandArgs(trailingOnly = TRUE)
+
 param_name <- c("omega_0","alpha","lambda","tau")
-file_name <- 'BASEBart_MDD_13'
+#file_name <- 'BASEBart_MDD_13'
+file_name <- args[1]
 
 load(paste('fit_result/',file_name,'.Rdata',sep=''))
 
