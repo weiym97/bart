@@ -84,3 +84,15 @@ cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
 save(fit,file="fit_result/BASEBart_107_Repeat_3_MDD_13.Rdata")
+
+prog_test <- function(n){
+  result <- 0
+  progbar <- txtProgressBar(min=0,max=n,style=3,char="=")
+  for(i in 1:n){
+    result <- result + 1
+    Sys.sleep(0.5)
+    setTxtProgressBar(progbar,value=i)
+  }
+  close(progbar)
+  return(result)
+}
