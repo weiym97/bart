@@ -62,7 +62,7 @@ nChains   = 4
 nWarmup   = floor(nIter/2)
 nThin     = 1
 
-modelFile = './BASEBart_107.stan'
+modelFile = './PTBart_1.stan'
 cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
@@ -83,16 +83,5 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/BASEBart_107_Repeat_3_MDD_13.Rdata")
+save(fit,file="fit_result/PTBart_1_MDD_13.Rdata")
 
-prog_test <- function(n){
-  result <- 0
-  progbar <- txtProgressBar(min=0,max=n,style=3,char="=")
-  for(i in 1:n){
-    result <- result + 1
-    Sys.sleep(0.5)
-    setTxtProgressBar(progbar,value=i)
-  }
-  close(progbar)
-  return(result)
-}
