@@ -62,26 +62,31 @@ model {
   gam_pr ~ normal(0, 1);
   tau_pr ~ normal(0, 1);
   
-  real A = 0.04355644;
-  real B = -0.0988012;
-  real C = 0.02832168;
+
 
   // Likelihood
   for (j in 1:N) {
     // Initialize n_succ and n_pump for a subject
     int n_succ = 0;  // Number of successful pumps
     int n_pump = 0;  // Number of total pumps
+    
+    real A = 0.04355644;
+    real B = -0.0988012;
+    real C = 0.02832168;
 
     for (k in 1:Tsubj[j]) {
       real p_burst;  // Belief on a balloon to be burst
       real omega;    // Optimal number of pumps
+      real temp_0;
+      real temp_1;
+      real temp_2;
 
       p_burst = 1 - ((phi[j] + eta[j] * n_succ) / (1 + eta[j] * n_pump));
       
-      real temp_0 = C * p_burst - B * gam[j];
-      real temp_1 = B * p_burst - 2 * A * gam[j] + B * gam[j] * p_burst;
-      real temp_2 = A * p_burst + 2 * A * gam[j] * p_burst;
-      omega = (- temp_1 + sqrt(temp_1**2 - 4 * temp_0 * temp_2)) / (2 * temp_2);
+      temp_0 = C * p_burst - B * gam[j];
+      temp_1 = B * p_burst - 2 * A * gam[j] + B * gam[j] * p_burst;
+      temp_2 = A * p_burst + 2 * A * gam[j] * p_burst;
+      omega = (- temp_1 + sqrt(temp_1 ^ 2 - 4 * temp_0 * temp_2)) / (2 * temp_2);
       
       
 
@@ -109,9 +114,7 @@ generated quantities {
   // For posterior predictive check
   real y_pred[N, T, P];
   
-  real A = 0.04355644;
-  real B = -0.0988012;
-  real C = 0.02832168;
+  
 
   // Set all posterior predictions to 0 (avoids NULL values)
   for (j in 1:N)
@@ -123,18 +126,24 @@ generated quantities {
     for (j in 1:N) {
       int n_succ = 0;
       int n_pump = 0;
+      real A = 0.04355644;
+      real B = -0.0988012;
+      real C = 0.02832168;
 
       log_lik[j] = 0;
 
       for (k in 1:Tsubj[j]) {
         real p_burst;  // Belief on a balloon to be burst
         real omega;    // Optimal number of pumps
+        real temp_0;
+        real temp_1;
+        real temp_2;
 
         p_burst = 1 - ((phi[j] + eta[j] * n_succ) / (1 + eta[j] * n_pump));
-        real temp_0 = C * p_burst - B * gam[j];
-        real temp_1 = B * p_burst - 2 * A * gam[j] + B * gam[j] * p_burst;
-        real temp_2 = A * p_burst + 2 * A * gam[j] * p_burst;
-        omega = (- temp_1 + sqrt(temp_1**2 - 4 * temp_0 * temp_2)) / (2 * temp_2);
+        temp_0 = C * p_burst - B * gam[j];
+        temp_1 = B * p_burst - 2 * A * gam[j] + B * gam[j] * p_burst;
+        temp_2 = A * p_burst + 2 * A * gam[j] * p_burst;
+        omega = (- temp_1 + sqrt(temp_1 ^ 2 - 4 * temp_0 * temp_2)) / (2 * temp_2);
 
         
 
