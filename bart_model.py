@@ -5,8 +5,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def reward_function(x):
-    return 0.04355644*x**2-0.0988012*x+0.02832168
+    return 0.04355644 * x ** 2 - 0.0988012 * x + 0.02832168
+
 
 class FourparamBart():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
@@ -45,9 +47,9 @@ class FourparamBart():
             n_pumps += pumps[i]
         return pumps.astype(np.int32), explode.astype(np.int32)
 
-    def compute_likelihood(self, phi, eta, gamma, tau,pumps,explosion,return_omega=False):
+    def compute_likelihood(self, phi, eta, gamma, tau, pumps, explosion, return_omega=False):
         num_trial = len(pumps)
-        neg_log_likelihoods=np.zeros(num_trial)
+        neg_log_likelihoods = np.zeros(num_trial)
         n_success = 0
         n_pumps = 0
         if return_omega:
@@ -58,7 +60,7 @@ class FourparamBart():
             optimal_pump = -gamma / np.log(1 - p_burst)
             if return_omega:
                 omega_history[i] = optimal_pump
-            neg_log_likelihood=0
+            neg_log_likelihood = 0
             for j in range(int(pumps[i] + 1 - explosion[i])):
                 p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
                 if j == pumps[i]:
@@ -69,9 +71,94 @@ class FourparamBart():
             n_success += pumps[i] - explosion[i]
             n_pumps += pumps[i]
         if return_omega:
-            return neg_log_likelihoods,omega_history
+            return neg_log_likelihoods, omega_history
         else:
             return neg_log_likelihoods
+
+
+class PTBart_5():
+    def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, A=0.04355644, B=-0.0988012, C=0.02832168):
+        self.max_pump = max_pump
+        self.explode_prob = explode_prob
+        self.accu_reward = accu_reward
+        self.reward = np.diff(accu_reward)
+        self.num_trial = num_trial
+        self.A = A
+        self.B = B
+        self.C = C
+
+    def generate_data(self, phi, eta, gamma, tau, Lambda, return_omega=False):
+        pumps = np.zeros(self.num_trial)
+        explode = np.zeros(self.num_trial)
+        # Record total pumps and successful pumps
+        n_success = 0
+        n_pumps = 0
+        if return_omega:
+            omega_history = np.zeros(self.num_trial)
+        for i in range(self.num_trial):
+            # Calculate the optimal number of pumps
+            p_burst = 1 - (phi + eta * n_success) / (1 + eta * n_pumps)
+            temp_0 = self.C * Lambda * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1 = self.B * Lambda * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2 = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
+
+            optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            if return_omega:
+                omega_history[i] = optimal_pump
+
+            ### probability of burst
+            burst = (self.explode_prob > np.random.uniform())
+            for j in range(self.max_pump):
+                # Subject probability of pump
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
+                pump = int(np.random.binomial(1, p_pump, 1)) > 0
+                if not pump:
+                    pumps[i] = j
+                    explode[i] = 0
+                    break
+                elif burst[j]:
+                    pumps[i] = j + 1
+                    explode[i] = 1
+                    break
+            n_success += pumps[i] - explode[i]
+            n_pumps += pumps[i]
+        if return_omega:
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history
+        else:
+            return pumps.astype(np.int32), explode.astype(np.int32)
+
+    def compute_likelihood(self, phi, eta, gamma, tau, Lambda, pumps, explosion, return_omega=False):
+        num_trial = len(pumps)
+        neg_log_likelihoods = np.zeros(num_trial)
+        n_success = 0
+        n_pumps = 0
+        if return_omega:
+            omega_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            # Calculate the optimal number of pumps
+            p_burst = 1 - (phi + eta * n_success) / (1 + eta * n_pumps)
+            temp_0 = self.C * Lambda * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1 = self.B * Lambda * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2 = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
+
+            optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            if return_omega:
+                omega_history[i] = optimal_pump
+            neg_log_likelihood = 0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - p_pump)
+                else:
+                    neg_log_likelihood -= np.log(p_pump)
+            neg_log_likelihoods[i] = neg_log_likelihood
+            n_success += pumps[i] - explosion[i]
+            n_pumps += pumps[i]
+        if return_omega:
+            return neg_log_likelihoods, omega_history
+        else:
+            return neg_log_likelihoods
+
 
 class BASEBart_14():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
@@ -139,6 +226,7 @@ class BASEBart_14():
         else:
             return neg_log_likelihoods
 
+
 class BASEBart_30():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
         self.max_pump = max_pump
@@ -147,7 +235,7 @@ class BASEBart_30():
         self.reward = np.diff(accu_reward)
         self.num_trial = num_trial
 
-    def generate_data(self, omega_0, alpha,beta, Lambda, tau, return_omega=False):
+    def generate_data(self, omega_0, alpha, beta, Lambda, tau, return_omega=False):
         pumps = np.zeros(self.num_trial)
         explode = np.zeros(self.num_trial)
         # Initialise subjective optimal pump reward
@@ -178,11 +266,11 @@ class BASEBart_30():
                     Loss_aver = 0
                     break
         if return_omega:
-            return pumps.astype(np.int32), explode.astype(np.int32), omega_history,omega_loss_aver_history
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history, omega_loss_aver_history
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 
-    def compute_likelihood(self, omega_0, alpha, beta,Lambda, tau, pumps, explosion, return_omega=False):
+    def compute_likelihood(self, omega_0, alpha, beta, Lambda, tau, pumps, explosion, return_omega=False):
         num_trial = len(pumps)
         neg_log_likelihoods = np.zeros(num_trial)
         omega = omega_0
@@ -197,9 +285,11 @@ class BASEBart_30():
                 omega_loss_aver_history[i] = omega * self.max_pump + Lambda * Loss_aver
             for j in range(int(pumps[i] + 1 - explosion[i])):
                 if j == pumps[i]:
-                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump - Lambda * Loss_aver))))
+                    neg_log_likelihood -= np.log(
+                        1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump - Lambda * Loss_aver))))
                 else:
-                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump - Lambda * Loss_aver))))
+                    neg_log_likelihood -= np.log(
+                        1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump - Lambda * Loss_aver))))
             neg_log_likelihoods[i] = neg_log_likelihood
             if explosion[i] == 0:
                 omega = omega + alpha / self.max_pump
@@ -209,9 +299,10 @@ class BASEBart_30():
                 Loss_aver = 0
 
         if return_omega:
-            return neg_log_likelihoods, omega_history,omega_loss_aver_history
+            return neg_log_likelihoods, omega_history, omega_loss_aver_history
         else:
             return neg_log_likelihoods
+
 
 class BASEBart_107():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
@@ -221,7 +312,7 @@ class BASEBart_107():
         self.reward = np.diff(accu_reward)
         self.num_trial = num_trial
 
-    def generate_data(self, omega_0, alpha,beta, Lambda, theta, tau, return_omega=False):
+    def generate_data(self, omega_0, alpha, beta, Lambda, theta, tau, return_omega=False):
         pumps = np.zeros(self.num_trial)
         explode = np.zeros(self.num_trial)
         # Initialise subjective optimal pump reward
@@ -242,25 +333,26 @@ class BASEBart_107():
                 if not pump:
                     pumps[i] = j
                     explode[i] = 0
-                    Loss_aver = Loss_aver + theta * (max(self.accu_reward[j] - reward_function(omega * self.max_pump),0) - Loss_aver)
-                    #if (j + 1) / self.max_pump > omega:
+                    Loss_aver = Loss_aver + theta * (
+                                max(self.accu_reward[j] - reward_function(omega * self.max_pump), 0) - Loss_aver)
+                    # if (j + 1) / self.max_pump > omega:
                     #    omega = omega + alpha / self.max_pump
-                    omega = omega + alpha  / (1 + np.exp(-beta * (j - omega * self.max_pump)))
+                    omega = omega + alpha / (1 + np.exp(-beta * (j - omega * self.max_pump)))
                     break
                 elif burst[j]:
                     pumps[i] = j + 1
                     explode[i] = 1
                     Loss_aver = (1 - theta) * Loss_aver
-                    #if (j + 1) / self.max_pump < omega:
+                    # if (j + 1) / self.max_pump < omega:
                     #    omega = omega - beta / self.max_pump
                     omega = omega - alpha / (1 + np.exp(-beta * (omega * self.max_pump - (j + 1))))
                     break
         if return_omega:
-            return pumps.astype(np.int32), explode.astype(np.int32), omega_history,omega_loss_aver_history
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history, omega_loss_aver_history
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 
-    def compute_likelihood(self, omega_0, alpha, beta,Lambda, theta, tau, pumps, explosion, return_omega=False):
+    def compute_likelihood(self, omega_0, alpha, beta, Lambda, theta, tau, pumps, explosion, return_omega=False):
         num_trial = len(pumps)
         neg_log_likelihoods = np.zeros(num_trial)
         omega = omega_0
@@ -275,27 +367,30 @@ class BASEBart_107():
                 omega_loss_aver_history[i] = omega * self.max_pump - Lambda * Loss_aver
             for j in range(int(pumps[i] + 1 - explosion[i])):
                 if j == pumps[i]:
-                    neg_log_likelihood -= np.log(1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
+                    neg_log_likelihood -= np.log(
+                        1 - 1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
                 else:
-                    neg_log_likelihood -= np.log(1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
+                    neg_log_likelihood -= np.log(
+                        1 / (1 + np.exp(tau * (j + 1 - omega * self.max_pump + Lambda * Loss_aver))))
             neg_log_likelihoods[i] = neg_log_likelihood
             if explosion[i] == 0:
-                Loss_aver = Loss_aver + theta * (self.accu_reward[j] - reward_function(omega * self.max_pump) - Loss_aver)
-                #if (j + 1) / self.max_pump > omega:
+                Loss_aver = Loss_aver + theta * (
+                            self.accu_reward[j] - reward_function(omega * self.max_pump) - Loss_aver)
+                # if (j + 1) / self.max_pump > omega:
                 #    omega = omega + alpha / self.max_pump
-                omega = omega + alpha  / (1 + np.exp(beta * (j - omega * self.max_pump)))
+                omega = omega + alpha / (1 + np.exp(beta * (j - omega * self.max_pump)))
 
             else:
                 Loss_aver = (1 - theta) * Loss_aver
-                #if (j + 1) / self.max_pump < omega:
+                # if (j + 1) / self.max_pump < omega:
                 #    omega = omega - beta / self.max_pump
                 omega = omega - alpha / (1 + np.exp(beta * (omega * self.max_pump - (j + 1))))
 
-
         if return_omega:
-            return neg_log_likelihoods, omega_history,omega_loss_aver_history
+            return neg_log_likelihoods, omega_history, omega_loss_aver_history
         else:
             return neg_log_likelihoods
+
 
 class BASEBart_110():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50):
@@ -305,7 +400,7 @@ class BASEBart_110():
         self.reward = np.diff(accu_reward)
         self.num_trial = num_trial
 
-    def generate_data(self, phi, eta, gamma,Lambda,theta, tau, return_omega = True):
+    def generate_data(self, phi, eta, gamma, Lambda, theta, tau, return_omega=True):
         pumps = np.zeros(self.num_trial)
         explode = np.zeros(self.num_trial)
         # Record total pumps and successful pumps
@@ -333,7 +428,8 @@ class BASEBart_110():
                 if not pump:
                     pumps[i] = j
                     explode[i] = 0
-                    Loss_aver = Loss_aver + theta * (max(self.accu_reward[j] - reward_function(optimal_pump),0) - Loss_aver)
+                    Loss_aver = Loss_aver + theta * (
+                                max(self.accu_reward[j] - reward_function(optimal_pump), 0) - Loss_aver)
                     break
                 elif burst[j]:
                     pumps[i] = j + 1
@@ -347,9 +443,9 @@ class BASEBart_110():
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 
-    def compute_likelihood(self, phi, eta, gamma, tau,pumps,explosion,return_omega=False):
+    def compute_likelihood(self, phi, eta, gamma, tau, pumps, explosion, return_omega=False):
         num_trial = len(pumps)
-        neg_log_likelihoods=np.zeros(num_trial)
+        neg_log_likelihoods = np.zeros(num_trial)
         n_success = 0
         n_pumps = 0
         if return_omega:
@@ -360,7 +456,7 @@ class BASEBart_110():
             optimal_pump = -gamma / np.log(1 - p_burst)
             if return_omega:
                 omega_history[i] = optimal_pump
-            neg_log_likelihood=0
+            neg_log_likelihood = 0
             for j in range(int(pumps[i] + 1 - explosion[i])):
                 p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
                 if j == pumps[i]:
@@ -371,9 +467,10 @@ class BASEBart_110():
             n_success += pumps[i] - explosion[i]
             n_pumps += pumps[i]
         if return_omega:
-            return neg_log_likelihoods,omega_history
+            return neg_log_likelihoods, omega_history
         else:
             return neg_log_likelihoods
+
 
 class EWBart():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, const_subexplode_prob=True):
@@ -522,6 +619,7 @@ class NEWBart():
 
         return pumps.astype(np.int32), explode.astype(np.int32)
 
+
 class RLBart_0():
     def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, model_type='1'):
         self.max_pump = max_pump
@@ -598,7 +696,6 @@ class RLBart_0():
             return neg_log_likelihoods, Q_history
         else:
             return neg_log_likelihoods
-
 
 
 class RLBart():

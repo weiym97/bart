@@ -3,7 +3,14 @@
 ###########################
 rm(list=ls())
 
+preprocessing <- function(data){
+  # Only preserve trials with pump number no less than 2
+  data <- data[data$pumps>=2,]
+  return(data)
+}
+
 df <- read.table('data/MDD_13.txt',header=T)
+df <- preprocessing(df)
 
 
 subjs <- unique(df$subjID)
@@ -62,7 +69,7 @@ nChains   = 4
 nWarmup   = floor(nIter/2)
 nThin     = 1
 
-modelFile = './PTBart_5.stan'
+modelFile = './PTBart_2.stan'
 cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
@@ -83,5 +90,5 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/PTBart_5_MDD_13.Rdata")
+save(fit,file="fit_result/PTBart_2_second_try.Rdata")
 
