@@ -81,7 +81,7 @@ model {
       real temp_1;
       real temp_2;
 
-      p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / n_pump);
+      p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
       
       temp_0 = C * log(1 - p_burst) + B * gam[j];
       temp_1 = 2 * A * gam[j] + B * log(1 - p_burst);
@@ -139,7 +139,7 @@ generated quantities {
         real temp_1;
         real temp_2;
 
-        p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / n_pump);
+        p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
         temp_0 = C * log(1 - p_burst) + B * gam[j];
         temp_1 = 2 * A * gam[j] + B * log(1 - p_burst);
         temp_2 = A * log(1 - p_burst);
