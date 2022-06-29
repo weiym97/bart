@@ -90,5 +90,5 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/PTBart_6_MDD_13.Rdata")
+save(fit,file="fit_result/PTBart_6_second_try.Rdata")
 
