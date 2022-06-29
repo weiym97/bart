@@ -98,11 +98,17 @@ class PTBart_5():
         for i in range(self.num_trial):
             # Calculate the optimal number of pumps
             p_burst = 1 - (phi + eta * n_success) / (1 + eta * n_pumps)
+            #print(p_burst)
+            p_burst=0.1
             temp_0 = self.C * Lambda * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            print('temp_0:',temp_0)
             temp_1 = self.B * Lambda * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            print('temp_1:',temp_1)
             temp_2 = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
+            print('temp_2:',temp_2)
 
             optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            print('optimal_pump:',optimal_pump)
             if return_omega:
                 omega_history[i] = optimal_pump
 

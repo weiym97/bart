@@ -54,6 +54,8 @@ dataList <- list(
   L         = L
 )
 
+
+
 ###############################
 ### fit model
 ###############################
@@ -90,5 +92,5 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/PTBart_7_second_try.Rdata")
+save(fit,file="fit_result/PTBart_7_MDD_13.Rdata")
 

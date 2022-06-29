@@ -126,9 +126,9 @@ if __name__ == '__main__':
     model = PTBart_5(max_pump=max_pump,
                      accu_reward=accu_reward,
                     explode_prob=explode_prob)
-    phi = 0.5
-    eta = 1.0
-    gamma = 0.93
+    phi = 0.9
+    eta = 0.005
+    gamma = 0.5
     Lambda = 0.0
     tau = 4.0
     pumps,explode,omega_history = model.generate_data(phi=phi,
