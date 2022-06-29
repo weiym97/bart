@@ -69,7 +69,7 @@ nChains   = 4
 nWarmup   = floor(nIter/2)
 nThin     = 1
 
-modelFile = './PTBart_3.stan'
+modelFile = './PTBart_6.stan'
 cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
@@ -90,5 +90,5 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/PTBart_3_second_try.Rdata")
+save(fit,file="fit_result/PTBart_6_MDD_13.Rdata")
 
