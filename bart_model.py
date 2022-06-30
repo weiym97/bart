@@ -266,6 +266,7 @@ class PTBart_11():
         RPE = 0
         if return_omega:
             omega_history = np.zeros(self.num_trial)
+            omega_original_history = np.zeros(self.num_trial)
         for i in range(self.num_trial):
             # Calculate the optimal number of pumps
             p_burst = np.exp(-xi * n_pumps) * psi + (1 - np.exp(-xi * n_pumps)) * (n_pumps - n_success) / (
@@ -276,8 +277,15 @@ class PTBart_11():
             temp_2 = self.A * Lambda * (1 + RPE) * p_burst - self.A * np.log(1 - p_burst)
 
             optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+
+            temp_0_original = self.C * Lambda * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1_original = self.B * Lambda * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2_original = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
+
+            optimal_pump_original = (- temp_1_original + np.sqrt(temp_1_original ** 2 - 4 * temp_0_original * temp_2_original)) / (2 * temp_2_original)
             if return_omega:
                 omega_history[i] = optimal_pump
+                omega_original_history[i] = optimal_pump_original
 
             ### probability of burst
             burst = (self.explode_prob > np.random.uniform())
@@ -296,10 +304,10 @@ class PTBart_11():
             n_success += pumps[i] - explode[i]
             n_pumps += pumps[i]
 
-            RPE += alpha * ( (self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i])- RPE)
+            RPE += alpha * ( max((self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i]),0)- RPE)
             print(RPE)
         if return_omega:
-            return pumps.astype(np.int32), explode.astype(np.int32), omega_history
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history,omega_original_history
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 

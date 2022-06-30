@@ -158,7 +158,7 @@ if __name__ == '__main__':
     Lambda = 2.0
     tau = 4.0
     alpha = 1.0
-    pumps,explode,omega_history = model.generate_data(psi=psi,
+    pumps,explode,omega_history,omega_original_history = model.generate_data(psi=psi,
                                                       xi=xi,
                                                       gamma=gamma,
                                                       Lambda=Lambda,
@@ -170,9 +170,11 @@ if __name__ == '__main__':
         'pumps':pumps,
         'explode':explode,
         'omega_history':omega_history,
+        'omega_original_history':omega_original_history
         #'omega_loss_averse_history':omega_loss_averse_history,
     })
     print(pumps)
     print(explode)
     print(omega_history)
+    print(omega_original_history)
 

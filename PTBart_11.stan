@@ -106,7 +106,12 @@ model {
       // Update n_succ and n_pump after each trial ends
       n_succ += pumps[j, k] - explosion[j, k];
       n_pump += pumps[j, k];
-      RPE += alpha[j] * ( (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
+      if (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)>0){
+          RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
+        }
+      else{
+          RPE -= alpha[j] * RPE;
+        }
     }
   }
 }
@@ -168,7 +173,12 @@ generated quantities {
 
         n_succ += pumps[j, k] - explosion[j, k];
         n_pump += pumps[j, k];
-        RPE += alpha[j] * ( (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
+        if (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)>0){
+          RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
+        }
+        else{
+          RPE -= alpha[j] * RPE;
+        }
       }
     }
   }
