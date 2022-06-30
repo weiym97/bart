@@ -122,7 +122,7 @@ if __name__ == '__main__':
     print('######################')
     print(np.average(pumps))
     '''
-
+    '''
     model = PTBart_5(max_pump=max_pump,
                      accu_reward=accu_reward,
                     explode_prob=explode_prob)
@@ -138,6 +138,34 @@ if __name__ == '__main__':
                                                       tau=tau,
                                                       return_omega = True
                                                      )
+    result= pd.DataFrame({
+        'pumps':pumps,
+        'explode':explode,
+        'omega_history':omega_history,
+        #'omega_loss_averse_history':omega_loss_averse_history,
+    })
+    print(pumps)
+    print(explode)
+    print(omega_history)
+    '''
+
+    model = PTBart_11(max_pump=max_pump,
+                     accu_reward=accu_reward,
+                     explode_prob=explode_prob)
+    psi = 0.05
+    xi = 0.005
+    gamma = 0.5
+    Lambda = 2.0
+    tau = 4.0
+    alpha = 1.0
+    pumps,explode,omega_history = model.generate_data(psi=psi,
+                                                      xi=xi,
+                                                      gamma=gamma,
+                                                      Lambda=Lambda,
+                                                      tau=tau,
+                                                      alpha=alpha,
+                                                      return_omega = True
+                                                      )
     result= pd.DataFrame({
         'pumps':pumps,
         'explode':explode,

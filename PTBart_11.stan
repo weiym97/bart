@@ -81,6 +81,7 @@ model {
     real A = 0.04355644;
     real B = -0.0988012;
     real C = 0.02832168;
+    real RPE = 0;
 
     for (k in 1:Tsubj[j]) {
       real p_burst;  // Belief on a balloon to be burst
@@ -88,7 +89,7 @@ model {
       real temp_0;
       real temp_1;
       real temp_2;
-      real RPE = 0;
+      
 
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
       temp_0 = C * lambda[j] * (1 + RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
@@ -140,6 +141,7 @@ generated quantities {
       real A = 0.04355644;
       real B = -0.0988012;
       real C = 0.02832168;
+      real RPE = 0;
 
       log_lik[j] = 0;
 
@@ -149,7 +151,7 @@ generated quantities {
         real temp_0;
         real temp_1;
         real temp_2;
-        real RPE = 0;
+       
 
         p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
         temp_0 = C * lambda[j] * (1 + RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
