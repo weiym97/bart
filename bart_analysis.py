@@ -298,6 +298,6 @@ if __name__ == '__main__':
         'model_name': 'PTBart_10',
     }
 
-    data = pd.read_csv('data/MDD_13_preprocessing.txt',sep='\t')
+    data = pd.read_csv('data/MDD_13_preprocessing.txt',sep=' ')
     params=pd.read_csv('fit_result/PTBart_10_MDD_13.txt',sep=' ')
     result = compute_likelihood_main(config,data,params)
