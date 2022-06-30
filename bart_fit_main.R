@@ -25,8 +25,8 @@ extract_posterior <- function(subjs,result){
 }
 
 # Could be manually set if not return with 'Rscript' command in linux
-model_name <- arg[1]
-data_file_name <- arg[2]
+model_name <- args[1]
+data_file_name <- args[2]
 df <- read.table(paste('data/',arg[2],'.txt',seq=''),header=T)
 df <- preprocessing(df)
 

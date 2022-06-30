@@ -179,6 +179,29 @@ def compute_likelihood_main(config,data,params):
             }
             results.append(pd.DataFrame(result))
         pd.concat(results).to_excel('analyze_result/BASEBart_106_1542.xlsx')
+    elif config['model_name'] == 'PTBart_10':
+        model = PTBart_10(max_pump = config['max_pump'],
+                          explode_prob = config['explode_prob'],
+                          accu_reward = config['accu_reward'],
+                         )
+        for subj in subjID:
+            pumps = data[data['subjID'] == subj]['pumps'].to_numpy()
+            explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
+            psi = float(params[params['subjID'] == subj]['psi'])
+            xi = float(params[params['subjID'] == subj]['xi'])
+            gamma = float(params[params['subjID'] == subj]['gamma'])
+            tau = float(params[params['subjID'] == subj]['tau'])
+            Lambda = float(params[params['subjID'] == subj]['lambda'])
+            neg_log_likelihood,omega_history = model.compute_likelihood(psi,xi,gamma,tau,Lambda,pumps,explosion,return_omega=True)
+            result={
+                'subjID':subj,
+                'neg_log_likelihood':neg_log_likelihood.tolist(),
+                'omega_history': omega_history.tolist(),
+                'pumps': pumps.tolist(),
+                'explosion':explosion.tolist(),
+            }
+            results.append(pd.DataFrame(result))
+        pd.concat(results).to_excel('analyze_result/PTBart_10.xlsx')
 
     else:
         raise ValueError('Model under development!')
@@ -254,6 +277,8 @@ if __name__ == '__main__':
     params=pd.read_csv('fit_result/BASEBart_14_MDD_13.csv')
     result = compute_likelihood_main(config,data,params)
     '''
+
+    '''
     config = {
         'max_pump': max_pump,
         'accu_reward': accu_reward,
@@ -263,4 +288,16 @@ if __name__ == '__main__':
 
     data = pd.read_csv('data/MDD_13.txt',sep='\t')
     params=pd.read_csv('fit_result/BASEBart_30_MDD_13.csv')
+    result = compute_likelihood_main(config,data,params)
+    '''
+
+    config = {
+        'max_pump': max_pump,
+        'accu_reward': accu_reward,
+        'explode_prob': explode_prob,
+        'model_name': 'PTBart_10',
+    }
+
+    data = pd.read_csv('data/MDD_13_preprocessing.txt',sep='\t')
+    params=pd.read_csv('fit_result/PTBart_10_MDD_13.txt',sep=' ')
     result = compute_likelihood_main(config,data,params)
