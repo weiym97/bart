@@ -17,7 +17,10 @@ extract_posterior <- function(subjs,param_name,result){
 model_name <- args[1]
 data_file_name <- args[2]
 
+df <- read.table(paste('data/',data_file_name,'.txt',sep=''),header=T)
+subjs <- unique(df$subjID)
 load(paste('fit_result/',model_name,'_',data_file_name,'.Rdata',sep=''))
+
 param_name <- c('psi','xi','gamma','tau','lambda','alpha')
 result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
 posterior_mean <- extract_posterior(subjs,result_summary)
