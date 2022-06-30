@@ -9,4 +9,4 @@ load(paste('fit_result/',file_name,'.Rdata',sep=''))
 
 fit_result <- rstan::summary(fit,pars=param_name)$summary
 fit_result_dataframe<-as.data.frame(fit_result)
-write.txt(fit_result_dataframe,paste('fit_result/',file_name,'.txt',seq=''))
+write.table(fit_result_dataframe,paste('fit_result/',file_name,'.txt',seq=''))
