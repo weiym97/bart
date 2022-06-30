@@ -340,7 +340,7 @@ class PTBart_11():
             neg_log_likelihoods[i] = neg_log_likelihood
             n_success += pumps[i] - explosion[i]
             n_pumps += pumps[i]
-            RPE += alpha * ( (self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explosion[i])- RPE)
+            RPE += alpha * ( max((self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i]),0)- RPE)
         if return_omega:
             return neg_log_likelihoods, omega_history
         else:

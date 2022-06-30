@@ -14,19 +14,11 @@ extract_posterior <- function(subjs,param_name,result){
   return(posterior)
 }
 
-param_name <- c("psi","xi","gam","tau",'lambda')
-#file_name <- 'BASEBart_MDD_13'
-file_name <- args[1]
+model_name <- args[1]
+data_file_name <- args[2]
 
-load(paste('fit_result/',file_name,'.Rdata',sep=''))
-
-fit_result <- rstan::summary(fit,pars=param_name)$summary
-fit_result_dataframe<-as.data.frame(fit_result)
-write.table(fit_result_dataframe,paste('fit_result/',file_name,'.txt',seq=''))
-
-result_summary <-read.table('fit_result/PTBart_10_MDD_13.txt',header=T)
-df <- read.table('data/MDD_13.txt',header=T)
-param_name <-c("psi","xi","gam","tau",'lambda')
-subjs <- unique(df$subjID)
-posterior_mean <- extract_posterior(subjs,param_name,result_summary)
-write.table(posterior_mean,'fit_result/fit_result_test.txt',quote=F,row.names=F)
+fit=load(paste('fit_result/',model_name,'_',data_file_name,'.Rdata',sep=' '))
+param_name <- c('psi','xi','gamma','tau','lambda','alpha')
+result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
+posterior_mean <- extract_posterior(subjs,result_summary)
+write.table(posterior_mean,paste('fit_result/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
