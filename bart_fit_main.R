@@ -2,6 +2,7 @@
 ### construct data
 ###########################
 rm(list=ls())
+args <- commandArgs(trailingOnly = TRUE)
 
 preprocessing <- function(data){
   # Only preserve trials with pump number no less than 2
@@ -9,7 +10,24 @@ preprocessing <- function(data){
   return(data)
 }
 
-df <- read.table('data/MDD_13.txt',header=T)
+extract_posterior <- function(subjs,result){
+  n_subj <- length(subjs)
+  param_name <- unique(gsub("\\[.*","",x=row.names(result)))
+  posterior <-data.frame(matrix(ncol=length(param_name)+1,nrow=n_subj, dimnames=list(NULL, c('subjID',param_name))))
+  for (i in 1:n_subj) {
+    posterior[i,'subjID'] <- subjs[i]
+    for (j in 1:length(param_name)){
+      temp_name <- paste(param_name[j],'[',i,']',sep='')
+      posterior[i,param_name[j]] = result[temp_name,'mean']
+    }
+  }
+  return(posterior)
+}
+
+# Could be manually set if not return with 'Rscript' command in linux
+model_name <- arg[1]
+data_file_name <- arg[2]
+df <- read.table(paste('data/',arg[2],'.txt',seq=''),header=T)
 df <- preprocessing(df)
 
 
@@ -32,9 +50,6 @@ for (i in 1:n_subj) {
   L[i, 1:t] <- pumps[i, 1:t] + 1 - explosion[i, 1:t]
 }
 
-#L[L==12] <- 11
-
-# r=0:max(pumps)
 r_accu = c(0.00, 0.00,0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.00)
 r      = c()
 for (j in 1:length(r_accu)-1) {
@@ -71,7 +86,7 @@ nChains   = 4
 nWarmup   = floor(nIter/2)
 nThin     = 1
 
-modelFile = './PTBart_10.stan'
+modelFile = paste('./',model_name,'.stan',sep='')
 cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
@@ -92,5 +107,9 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file="fit_result/PTBart_10_MDD_13.Rdata")
+save(fit,file=paste('fit_result/',model_name,'_',data_file_name,'.Rdata',sep=''))
+
+result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
+posterior_mean <- extract_posterior(subjs,result_summary)
+write.table(posterior_mean,paste('fit_result/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
 

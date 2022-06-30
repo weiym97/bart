@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PTBart_10.stan" beforeDir="false" afterPath="$PROJECT_DIR$/PTBart_10.stan" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,7 +135,7 @@
       <workItem from="1653805528810" duration="7239000" />
       <workItem from="1653819241878" duration="31602000" />
       <workItem from="1654229194356" duration="22780000" />
-      <workItem from="1656404014642" duration="10218000" />
+      <workItem from="1656404014642" duration="12578000" />
     </task>
     <servers />
   </component>
