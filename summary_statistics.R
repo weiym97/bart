@@ -1,8 +1,9 @@
 rm(list=ls())
 args <- commandArgs(trailingOnly = TRUE)
 
-extract_posterior <- function(subjs,param_name,result){
+extract_posterior <- function(subjs,result){
   n_subj <- length(subjs)
+  param_name <- unique(gsub("\\[.*","",x=row.names(result)))
   posterior <-data.frame(matrix(ncol=length(param_name)+1,nrow=n_subj, dimnames=list(NULL, c('subjID',param_name))))
   for (i in 1:n_subj) {
     posterior[i,'subjID'] <- subjs[i]
