@@ -216,7 +216,7 @@ def compute_likelihood_main(config,data,params):
             tau = float(params[params['subjID'] == subj]['tau'])
             Lambda = float(params[params['subjID'] == subj]['lambda'])
             alpha = float(params[params['subjID'] == subj]['alpha'])
-            neg_log_likelihood,omega_history = model.compute_likelihood(psi,xi,gamma,tau,Lambda,pumps,explosion,return_omega=True)
+            neg_log_likelihood,omega_history = model.compute_likelihood(psi,xi,gamma,tau,Lambda,alpha,pumps,explosion,return_omega=True)
             result={
                 'subjID':subj,
                 'neg_log_likelihood':neg_log_likelihood.tolist(),
