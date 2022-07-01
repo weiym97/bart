@@ -29,8 +29,8 @@ transformed data{
 
 parameters {
   // Group-level parameters
-  vector[6] mu_pr;
-  vector<lower=0>[6] sigma;
+  vector[7] mu_pr;
+  vector<lower=0>[7] sigma;
 
   // Normally distributed error for Matt trick
   vector[N] psi_pr;
