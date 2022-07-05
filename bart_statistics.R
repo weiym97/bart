@@ -27,7 +27,7 @@ compute_withdraw_prop <- function(data){
     count_num <- 0
     total_num <- 0
     for (j in 2:nrow(data_subj)){
-      if ((data_subj$explosion[j] == 0) && (data_subj$explosion[j-1] == 0)){
+      if ((data_subj$explosion[j] == 0)){ #&& (data_subj$explosion[j-1] == 0)){
         total_num <- total_num + 1
         if (data_subj$pumps[j] < data_subj$pumps[j-1]){
           count_num <- count_num +1
@@ -36,17 +36,15 @@ compute_withdraw_prop <- function(data){
       
     }
     if (total_num>0){
-      withdraw_prop[i] <- count_num/total_sum
+      withdraw_prop[i] <- count_num/total_num
     }
     else{
       withdraw_prop[i] <- 0
     }
     
     
-    }
   }
   return(withdraw_prop)
-  
 }
 data_name='MDD_13'
 
