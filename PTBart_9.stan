@@ -35,7 +35,7 @@ parameters {
   // Normally distributed error for Matt trick
   vector[N] psi_pr;
   vector[N] xi_pr;
-  vector[N] gam_pr;
+  vector[N] gamma_pr;
   vector[N] tau_pr;
   vector[N] lambda_pr;
 }
@@ -44,13 +44,13 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0,upper=1>[N] psi;
   vector<lower=0>[N] xi;
-  vector<lower=0,upper=2>[N] gam;
+  vector<lower=0,upper=2>[N] gamma;
   vector<lower=0>[N] tau;
   vector<lower=0>[N] lambda;
 
   psi = Phi_approx(mu_pr[1] + sigma[1] * psi_pr);
   xi = exp(mu_pr[2] + sigma[2] * xi_pr);
-  gam = 2 * Phi_approx(mu_pr[3] + sigma[3] * gam_pr);
+  gamma = 2 * Phi_approx(mu_pr[3] + sigma[3] * gamma_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
   lambda = exp(mu_pr[5] + sigma[5] * lambda_pr);
 }
@@ -62,7 +62,7 @@ model {
 
   psi_pr ~ normal(0, 1);
   xi_pr ~ normal(0, 1);
-  gam_pr ~ normal(0, 1);
+  gamma_pr ~ normal(0, 1);
   tau_pr ~ normal(0, 1);
   lambda_pr ~ normal(0,1);
   
@@ -108,7 +108,7 @@ generated quantities {
   // Actual group-level mean
   real<lower=0, upper=1> mu_psi = Phi_approx(mu_pr[1]);
   real<lower=0> mu_xi = exp(mu_pr[2]);
-  real<lower=0,upper=2> mu_gam = 2 * Phi_approx(mu_pr[3]);
+  real<lower=0,upper=2> mu_gamma = 2 * Phi_approx(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
   real<lower=0> mu_lambda = exp(mu_pr[5]);
 

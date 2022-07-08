@@ -229,6 +229,7 @@ class PTBart_10():
             temp_2 = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
 
             optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            print('optimal_pump:', optimal_pump)
             if return_omega:
                 omega_history[i] = optimal_pump
             neg_log_likelihood = 0
@@ -236,11 +237,16 @@ class PTBart_10():
                 p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump)))
                 if j == pumps[i]:
                     neg_log_likelihood -= np.log(1 - p_pump)
+                    print('j= ',j,' neg_log_likelihood: ', neg_log_likelihood)
                 else:
                     neg_log_likelihood -= np.log(p_pump)
+                    print('j= ',j,' neg_log_likelihood: ', neg_log_likelihood)
             neg_log_likelihoods[i] = neg_log_likelihood
             n_success += pumps[i] - explosion[i]
             n_pumps += pumps[i]
+            if i == 2:
+                raise ValueError('For test!')
+
         if return_omega:
             return neg_log_likelihoods, omega_history
         else:
