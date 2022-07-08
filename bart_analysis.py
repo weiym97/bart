@@ -330,9 +330,9 @@ if __name__ == '__main__':
         'max_pump': max_pump,
         'accu_reward': accu_reward,
         'explode_prob': explode_prob,
-        'model_name': 'PTBart_11',
+        'model_name': 'PTBart_10',
     }
 
-    data = pd.read_csv('data/MDD_13_preprocessing.txt',sep=' ')
-    params=pd.read_csv('fit_result/summary_PTBart_11_MDD_13.txt',sep=' ')
+    data = pd.read_csv('data/simulation/PTBart_10_simulation.txt',sep=' ')
+    params=pd.read_csv('fit_result/summary_PTBart_10_PTBart_10_simulation.txt',sep=' ')
     result = compute_likelihood_main(config,data,params)
