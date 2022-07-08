@@ -86,8 +86,8 @@ model {
       real temp_2;
 
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-      temp_0 = C * lambda[j] * p_burst - C * log1m(p_burst) - B * gam[j];
-      temp_1 = B * lambda[j] * p_burst - 2 * A * gam[j] - B * log1m(p_burst);
+      temp_0 = C * lambda[j] * p_burst - C * log1m(p_burst) - B * gamma[j];
+      temp_1 = B * lambda[j] * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
       temp_2 = A * lambda[j] * p_burst- A * log1m(p_burst);
       omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
       
@@ -144,8 +144,8 @@ generated quantities {
         real temp_2;
 
         p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-        temp_0 = C * lambda[j] * p_burst - C * log1m(p_burst) - B * gam[j];
-        temp_1 = B * lambda[j] * p_burst - 2 * A * gam[j] - B * log1m(p_burst);
+        temp_0 = C * lambda[j] * p_burst - C * log1m(p_burst) - B * gamma[j];
+        temp_1 = B * lambda[j] * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
         temp_2 = A * lambda[j] * p_burst- A * log1m(p_burst);
         omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
 
