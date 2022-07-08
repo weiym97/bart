@@ -82,7 +82,7 @@ def PTBart_10_simulation_main(accu_reward, explode_prob, max_pump, params, data_
                                  'explosion': explosion})
         result.append(subjdata)
     result = pd.concat(result)
-    result.to_csv(data_dir + 'PTBART_10_simulation.txt', sep=' ', index=False, doublequote=False)
+    result.to_csv(data_dir + 'PTBart_10_simulation.txt', sep=' ', index=False, doublequote=False)
     for j in range(n_file):
         result_save = result.iloc[int(j * n_fit_per_run * trial_per_subj):int((j + 1) * n_fit_per_run * trial_per_subj),:]
         result_save.to_csv(data_dir + 'PTBart_10_simulation_'+str(j+1)+'.txt',sep=' ',index=False,doublequote=False)

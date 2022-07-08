@@ -4,7 +4,6 @@
     <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bart_simulation_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_simulation_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_statistics.R" beforeDir="false" afterPath="$PROJECT_DIR$/bart_statistics.R" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +23,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../moment_neural_network" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.bart_simulation_main">
@@ -137,7 +136,8 @@
       <workItem from="1653819241878" duration="31602000" />
       <workItem from="1654229194356" duration="22780000" />
       <workItem from="1656404014642" duration="20981000" />
-      <workItem from="1657006091348" duration="7084000" />
+      <workItem from="1657006091348" duration="7812000" />
+      <workItem from="1657203342701" duration="857000" />
     </task>
     <servers />
   </component>
