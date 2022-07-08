@@ -24,6 +24,18 @@ extract_posterior <- function(subjs,result){
   return(posterior)
 }
 
+return_param <- function(model_name){
+  params=switch(EXPR=model_name,
+                FourparamBart=c('phi','eta','gamma','tau'),
+                EWBart = c('psi','xi','gamma','lambda','tau'),
+                EWMVBart = c('psi','xi','gamma','lambda','tau'),
+                PTBart_10=c('psi','xi','gamma','tau','lambda'),
+                STLBart = c('omega_0','vwin','vloss','tau'),
+                STLDBart = c('omega_0','vwin','vloss','alpha','tau'),
+  )
+  return(params)
+}
+
 # Could be manually set if not return with 'Rscript' command in linux
 data_type <- args[1]
 model_name <- args[2]
@@ -110,7 +122,7 @@ cat("It took",as.character.Date(endTime - startTime), "\n")
 # save the result
 save(fit,file=paste('fit_result/',model_name,'_',data_file_name,'.Rdata',sep=''))
 
-param_name <- c('psi','xi','gamma','tau','lambda','alpha','beta')
+param_name <- return_param(model_name)
 result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
 posterior_mean <- extract_posterior(subjs,result_summary)
 write.table(posterior_mean,paste('fit_result/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)

@@ -1,4 +1,16 @@
 rm(list=ls())
+
+return_param <- function(model_name){
+  params=switch(EXPR=model_name,
+                FourparamBart=c('phi','eta','gamma','tau'),
+                EWBart = c('psi','xi','gamma','lambda','tau'),
+                EWMVBart = c('psi','xi','gamma','lambda','tau'),
+                PTBart_10=c('psi','xi','gamma','tau','lambda'),
+                STLBart = c('omega_0','vwin','vloss','tau'),
+                STLDBart = c('omega_0','vwin','vloss','alpha','tau'),
+                )
+  return(params)
+}
 args <- commandArgs(trailingOnly = TRUE)
 
 extract_posterior <- function(subjs,result){

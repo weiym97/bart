@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_simulation_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_simulation_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FourparamBart.stan" beforeDir="false" afterPath="$PROJECT_DIR$/FourparamBart.stan" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bart_fit_main.R" beforeDir="false" afterPath="$PROJECT_DIR$/bart_fit_main.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/summary_statistics.R" beforeDir="false" afterPath="$PROJECT_DIR$/summary_statistics.R" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +138,7 @@
       <workItem from="1654229194356" duration="22780000" />
       <workItem from="1656404014642" duration="20981000" />
       <workItem from="1657006091348" duration="7812000" />
-      <workItem from="1657203342701" duration="857000" />
+      <workItem from="1657203342701" duration="1455000" />
     </task>
     <servers />
   </component>

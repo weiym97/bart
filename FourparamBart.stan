@@ -35,7 +35,7 @@ parameters {
   // Normally distributed error for Matt trick
   vector[N] phi_pr;
   vector[N] eta_pr;
-  vector[N] gam_pr;
+  vector[N] gamma_pr;
   vector[N] tau_pr;
 }
 
@@ -43,12 +43,12 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0,upper=1>[N] phi;
   vector<lower=0>[N] eta;
-  vector<lower=0>[N] gam;
+  vector<lower=0>[N] gamma;
   vector<lower=0>[N] tau;
 
   phi = Phi_approx(mu_pr[1] + sigma[1] * phi_pr);
   eta = exp(mu_pr[2] + sigma[2] * eta_pr);
-  gam = exp(mu_pr[3] + sigma[3] * gam_pr);
+  gamma = exp(mu_pr[3] + sigma[3] * gamma_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
 }
 
@@ -59,7 +59,7 @@ model {
 
   phi_pr ~ normal(0, 1);
   eta_pr ~ normal(0, 1);
-  gam_pr ~ normal(0, 1);
+  gamma_pr ~ normal(0, 1);
   tau_pr ~ normal(0, 1);
 
   // Likelihood
@@ -73,7 +73,7 @@ model {
       real omega;    // Optimal number of pumps
 
       p_burst = 1 - ((phi[j] + eta[j] * n_succ) / (1 + eta[j] * n_pump));
-      omega = -gam[j] / log1m(p_burst);
+      omega = -gamma[j] / log1m(p_burst);
       
       
 
@@ -92,7 +92,7 @@ generated quantities {
   // Actual group-level mean
   real<lower=0, upper=1> mu_phi = Phi_approx(mu_pr[1]);
   real<lower=0> mu_eta = exp(mu_pr[2]);
-  real<lower=0> mu_gam = exp(mu_pr[3]);
+  real<lower=0> mu_gamma = exp(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
 
   // Log-likelihood for model fit
@@ -119,7 +119,7 @@ generated quantities {
         real omega;    // Optimal number of pumps
 
         p_burst = 1 - ((phi[j] + eta[j] * n_succ) / (1 + eta[j] * n_pump));
-        omega = -gam[j] / log1m(p_burst);
+        omega = -gamma[j] / log1m(p_burst);
 
         
 
