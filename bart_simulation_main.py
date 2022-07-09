@@ -72,6 +72,8 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
         model = PTBart_final_1(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     elif model_name == 'PTBart_final_2':
         model = PTBart_final_2(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
+    elif model_name == 'FourparamBart':
+        model = FourparamBart(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     else:
         raise ValueError('Invalid model name!')
     n_file = int(n_simu_subj / n_fit_per_run)
@@ -90,13 +92,17 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
                                                   tau=params['tau'][i],
                                                   Lambda=params['lambda'][i])
         elif model_name == 'PTBart_final_2':
-
             pumps,explosion = model.generate_data(psi=params['psi'][i],
                                                   xi=params['xi'][i],
                                                   gamma=params['gamma'][i],
                                                   tau=params['tau'][i],
                                                   Lambda=params['lambda'][i],
                                                   alpha=params['alpha'][i])
+        elif model_name == 'FourparamBart':
+            pumps,explosion = model.generate_data(phi=params['phi'][i],
+                                                  eta=params['eta'][i],
+                                                  gamma=params['gamma'][i],
+                                                  tau=params['tau'][i])
         else:
             raise ValueError('Invalid model name!')
         subjdata = pd.DataFrame({'subjID': params['subjID'][i],
@@ -277,6 +283,7 @@ if __name__ == '__main__':
     '''
     #####################################################################################################
     ### Simulation for PTBart_final_2
+    '''
     psi = np.random.uniform(0.02, 0.12, size=n_simu_subj)
     xi = 10 ** np.random.uniform(-3, -1, size=n_simu_subj)
     gamma = np.random.uniform(0.4, 0.6, size=n_simu_subj)
@@ -292,3 +299,18 @@ if __name__ == '__main__':
                            'alpha':alpha})
     data_dir = 'data/simulation/'
     model_simulation_main('PTBart_final_2',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
+    '''
+    ########################################################################################################
+    ### Simulation of Four parameter model
+    phi = np.random.uniform(0.88,0.94,size=n_simu_subj)
+    eta = 10 ** np.random.uniform(-3, -1.5, size=n_simu_subj)
+    gamma = np.random.uniform(0.35,0.6,size=n_simu_subj)
+    tau = np.random.uniform(0.8,2.5,size=n_simu_subj)
+    params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
+                           'phi': phi,
+                           'eta': eta,
+                           'gamma': gamma,
+                           'tau': tau,
+                           })
+    data_dir = 'data/simulation/'
+    model_simulation_main('FourparamBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
