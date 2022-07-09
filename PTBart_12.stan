@@ -106,17 +106,12 @@ model {
 
       // Calculate likelihood with bernoulli distribution
       for (l in 1:L[j,k]){
-        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega - l));
+        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega + 0.5 - l));
       }
       // Update n_succ and n_pump after each trial ends
       n_succ += pumps[j, k] - explosion[j, k];
       n_pump += pumps[j, k];
-      if (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)>0){
-          RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
-        }
-      else{
-          RPE -= alpha[j] * RPE;
-        }
+      RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
     }
   }
 }
@@ -173,18 +168,13 @@ generated quantities {
         
 
         for (l in 1:L[j,k]) {
-          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega - l));
-          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega - l));
+          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega + 0.5 - l));
+          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega + 0.5 - l));
         }
 
         n_succ += pumps[j, k] - explosion[j, k];
         n_pump += pumps[j, k];
-        if (r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)>0){
-          RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
-        }
-        else{
-          RPE -= alpha[j] * RPE;
-        }
+        RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
       }
     }
   }
