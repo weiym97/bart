@@ -201,7 +201,7 @@ def compute_likelihood_main(config,data,params):
                 'explosion':explosion.tolist(),
             }
             results.append(pd.DataFrame(result))
-        pd.concat(results).to_excel('analyze_result/PTBart_10.xlsx')
+        pd.concat(results).to_excel('analyze_result/PTBart_10_simulation.xlsx')
     elif config['model_name'] == 'PTBart_11':
         model = PTBart_11(max_pump = config['max_pump'],
                           explode_prob = config['explode_prob'],
@@ -334,5 +334,5 @@ if __name__ == '__main__':
     }
 
     data = pd.read_csv('data/simulation/PTBart_10_simulation.txt',sep=' ')
-    params=pd.read_csv('fit_result/summary_PTBart_9_PTBart_10_simulation.txt',sep=' ')
+    params=pd.read_excel('data/simulation/PTBart_10_simulation_statistics.xlsx')
     result = compute_likelihood_main(config,data,params)

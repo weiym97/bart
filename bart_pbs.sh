@@ -2,7 +2,7 @@
 
 #PBS -N swimming
 #PBS -q workq
-#PBS -l nodes=1:ppn=4
+#PBS -l nodes=1:ppn=1
 ##PBS -k oe
 
 #PBS -l walltime=100:59:59
