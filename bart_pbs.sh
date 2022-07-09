@@ -22,6 +22,6 @@ echo "$PBS_O_WORKDIR"
 EXP_ID=`echo $PBS_JOBID | sed 's/\[[^]]*\]//'`
 echo $EXP_ID
 
-Rscript bart_fit_main.R simulation FourparamBart FourparamBart_simulation_$PBS_ARRAY_INDEX
+Rscript bart_fit_main.R simulation EWMVBart EWMVBart_simulation_$PBS_ARRAY_INDEX
 
 
