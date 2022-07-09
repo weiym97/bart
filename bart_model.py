@@ -493,26 +493,27 @@ class PTBart_final_2():
                     break
             n_success += pumps[i] - explode[i]
             n_pumps += pumps[i]
-            RPE += alpha * ((self.r_accu[pumps[i]] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
+            RPE += alpha * ((self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i])- RPE)
         if return_omega:
             return pumps.astype(np.int32), explode.astype(np.int32), omega_history
         else:
             return pumps.astype(np.int32), explode.astype(np.int32)
 
-    def compute_likelihood(self, psi, xi, gamma, tau, Lambda, pumps, explosion, return_omega=False):
+    def compute_likelihood(self, psi, xi, gamma, tau, Lambda, alpha, pumps, explosion, return_omega=False):
         num_trial = len(pumps)
         neg_log_likelihoods = np.zeros(num_trial)
         n_success = 0
         n_pumps = 0
+        RPE = 0
         if return_omega:
             omega_history = np.zeros(num_trial)
         for i in range(num_trial):
             # Calculate the optimal number of pumps
             p_burst = np.exp(-xi * n_pumps) * psi + (1 - np.exp(-xi * n_pumps)) * (n_pumps - n_success) / (
                     n_pumps + 1e-5)
-            temp_0 = self.C * Lambda * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
-            temp_1 = self.B * Lambda * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
-            temp_2 = self.A * Lambda * p_burst - self.A * np.log(1 - p_burst)
+            temp_0 = self.C * Lambda * np.exp(RPE) * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1 = self.B * Lambda * np.exp(RPE) * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2 = self.A * Lambda * np.exp(RPE) * p_burst - self.A * np.log(1 - p_burst)
 
             optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
             #print('optimal_pump:', optimal_pump)
@@ -530,6 +531,7 @@ class PTBart_final_2():
             neg_log_likelihoods[i] = neg_log_likelihood
             n_success += pumps[i] - explosion[i]
             n_pumps += pumps[i]
+            RPE += alpha * ((self.accu_reward[pumps[i]] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i])- RPE)
             #if i == 2:
             #    raise ValueError('For test!')
 
