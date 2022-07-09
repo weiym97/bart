@@ -334,5 +334,5 @@ if __name__ == '__main__':
     }
 
     data = pd.read_csv('data/simulation/PTBart_10_simulation.txt',sep=' ')
-    params=pd.read_csv('fit_result/summary_PTBart_10_PTBart_10_simulation.txt',sep=' ')
+    params=pd.read_csv('fit_result/summary_PTBart_9_PTBart_10_simulation.txt',sep=' ')
     result = compute_likelihood_main(config,data,params)
