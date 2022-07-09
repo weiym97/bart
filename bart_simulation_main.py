@@ -74,6 +74,10 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
         model = PTBart_final_2(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     elif model_name == 'FourparamBart':
         model = FourparamBart(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
+    elif model_name == 'EWBart':
+        model = EWBart(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
+    elif model_name == 'EWMVBart':
+        model = EWMVBart(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     else:
         raise ValueError('Invalid model name!')
     n_file = int(n_simu_subj / n_fit_per_run)
@@ -102,6 +106,18 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
             pumps,explosion = model.generate_data(phi=params['phi'][i],
                                                   eta=params['eta'][i],
                                                   gamma=params['gamma'][i],
+                                                  tau=params['tau'][i])
+        elif model_name == 'EWBart':
+            pumps,explosion = model.generate_data(psi=params['psi'][i],
+                                                  xi=params['xi'][i],
+                                                  rho=params['rho'][i],
+                                                  Lambda=params['lambda'][i],
+                                                  tau=params['tau'][i])
+        elif model_name == 'EWMVBart':
+            pumps,explosion = model.generate_data(psi=params['psi'][i],
+                                                  xi=params['xi'][i],
+                                                  rho=params['rho'][i],
+                                                  Lambda=params['lambda'][i],
                                                   tau=params['tau'][i])
         else:
             raise ValueError('Invalid model name!')
@@ -318,5 +334,18 @@ if __name__ == '__main__':
     '''
 
     ##########################################################################################################
-    ### Simulation of EW model
-    
+    ### Simulation of EWMV model
+    psi = np.random.uniform(0.06,0.12,size=n_simu_subj)
+    xi = 10 ** np.random.uniform(-3, -1.5, size=n_simu_subj)
+    rho = np.random.uniform(0.01,0.025,size=n_simu_subj)
+    Lambda = np.random.uniform(3.5,6.5,size=n_simu_subj)
+    tau = np.random.uniform(20.90,size=n_simu_subj)
+    params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
+                           'psi': psi,
+                           'xi': xi,
+                           'rho': rho,
+                           'lambda':Lambda,
+                           'tau': tau
+                           })
+    data_dir = 'data/simulation/'
+    model_simulation_main('EWMVBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
