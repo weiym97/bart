@@ -45,14 +45,14 @@ transformed parameters {
   // Subject-level parameters with Matt trick
   vector<lower=0,upper=1>[N] psi;
   vector<lower=0>[N] xi;
-  vector<lower=0>[N] gamma;
+  vector<lower=0,upper=2>[N] gamma;
   vector<lower=0>[N] tau;
   vector<lower=0>[N] lambda;
   vector<lower=0,upper=1>[N] alpha;
 
   psi = Phi_approx(mu_pr[1] + sigma[1] * psi_pr);
   xi = exp(mu_pr[2] + sigma[2] * xi_pr);
-  gamma = exp(mu_pr[3] + sigma[3] * gamma_pr);
+  gamma = 2 * Phi_approx(mu_pr[3] + sigma[3] * gamma_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
   lambda = exp(mu_pr[5] + sigma[5] * lambda_pr);
   alpha = Phi_approx(mu_pr[6] + sigma[6] * alpha_pr);
@@ -101,7 +101,7 @@ model {
 
       // Calculate likelihood with bernoulli distribution
       for (l in 1:L[j,k]){
-        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega - l));
+        d[j, k, l] ~ bernoulli_logit(tau[j] * (omega + 0.5 - l));
       }
       // Update n_succ and n_pump after each trial ends
       n_succ += pumps[j, k] - explosion[j, k];
@@ -116,7 +116,7 @@ generated quantities {
   // Actual group-level mean
   real<lower=0, upper=1> mu_psi = Phi_approx(mu_pr[1]);
   real<lower=0> mu_xi = exp(mu_pr[2]);
-  real<lower=0> mu_gamma = exp(mu_pr[3]);
+  real<lower=0,upper=2> mu_gamma = 2 * Phi_approx(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
   real<lower=0> mu_lambda = exp(mu_pr[5]);
   real<lower=0> mu_alpha = exp(mu_pr[6]);
@@ -163,8 +163,8 @@ generated quantities {
         
 
         for (l in 1:L[j,k]) {
-          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega - l));
-          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega - l));
+          log_lik[j] += bernoulli_logit_lpmf(d[j, k, l] | tau[j] * (omega + 0.5 - l));
+          y_pred[j, k, l] = bernoulli_logit_rng(tau[j] * (omega + 0.5 - l));
         }
 
         n_succ += pumps[j, k] - explosion[j, k];
