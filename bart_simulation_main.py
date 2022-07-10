@@ -390,7 +390,7 @@ if __name__ == '__main__':
     '''
     ##########################################################################################################
     ### Simulation of EWMV model
-
+    '''
     psi = np.random.uniform(0.06,0.12,size=n_simu_subj)
     xi = 10 ** np.random.uniform(-3, -1.5, size=n_simu_subj)
     rho = np.random.uniform(0.01,0.025,size=n_simu_subj)
@@ -405,16 +405,16 @@ if __name__ == '__main__':
                            })
     data_dir = 'data/simulation/'
     model_simulation_main('EWMVBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
-
+    '''
 
     ###################################################################################################
     ### Simulation for EW model
-    '''
+
     psi = np.random.uniform(0.06,0.12,size=n_simu_subj)
     xi = 10 ** np.random.uniform(-3, -1.5, size=n_simu_subj)
     rho = np.random.uniform(0.01,0.025,size=n_simu_subj)
-    Lambda = np.random.uniform(3.5,6.5,size=n_simu_subj)
-    tau = np.random.uniform(20,90,size=n_simu_subj)
+    Lambda = np.random.uniform(1.5,3.0,size=n_simu_subj)
+    tau = np.random.uniform(5,90,size=n_simu_subj)
     params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
                            'psi': psi,
                            'xi': xi,
@@ -424,4 +424,3 @@ if __name__ == '__main__':
                            })
     data_dir = 'data/simulation/'
     model_simulation_main('EWBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
-    '''
