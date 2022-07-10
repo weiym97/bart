@@ -43,6 +43,7 @@ return_param <- function(model_name){
                 PTBart_final_2=c('psi','xi','gamma','tau','lambda','alpha'),
                 PTBart_final_3=c('psi','xi','lambda','tau'),
                 PTBart_final_4=c('psi','xi','lambda','tau','alpha'),
+                PTBart_final_5=c('psi','xi','lambda','tau'),
                 STLBart = c('omega_0','vwin','vloss','tau'),
                 STLDBart = c('omega_0','vwin','vloss','alpha','tau'),
   )
