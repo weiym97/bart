@@ -189,7 +189,8 @@ def compute_likelihood_main(config,data,params):
             explosion = data[data['subjID'] == subj]['explosion'].to_numpy()
             psi = float(params[params['subjID'] == subj]['psi'])
             xi = float(params[params['subjID'] == subj]['xi'])
-            gamma = float(params[params['subjID'] == subj]['gamma'])
+            #gamma = float(params[params['subjID'] == subj]['gamma'])
+            gamma = 1/float(params[params['subjID'] == subj]['lambda'])
             tau = float(params[params['subjID'] == subj]['tau'])
             Lambda = float(params[params['subjID'] == subj]['lambda'])
             neg_log_likelihood,omega_history = model.compute_likelihood(psi,xi,gamma,tau,Lambda,pumps,explosion,return_omega=True)
@@ -201,7 +202,7 @@ def compute_likelihood_main(config,data,params):
                 'explosion':explosion.tolist(),
             }
             results.append(pd.DataFrame(result))
-        pd.concat(results).to_excel('analyze_result/PTBart_10_simulation.xlsx')
+        pd.concat(results).to_excel('analyze_result/PTBart_final_3_original_simulation.xlsx')
     elif config['model_name'] == 'PTBart_11':
         model = PTBart_11(max_pump = config['max_pump'],
                           explode_prob = config['explode_prob'],
@@ -333,6 +334,6 @@ if __name__ == '__main__':
         'model_name': 'PTBart_10',
     }
 
-    data = pd.read_csv('data/simulation/PTBart_10_simulation.txt',sep=' ')
-    params=pd.read_excel('data/simulation/PTBart_10_simulation_statistics.xlsx')
+    data = pd.read_csv('data/simulation/PTBart_final_3_simulation.txt',sep=' ')
+    params=pd.read_excel('data/simulation/PTBart_final_3_simulation_statistics.xlsx')
     result = compute_likelihood_main(config,data,params)
