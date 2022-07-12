@@ -113,7 +113,7 @@ generated quantities {
   real<lower=0> mu_xi = exp(mu_pr[2]);
   real<lower=0,upper=2> mu_gamma = 2 * Phi_approx(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
-  real<lower=0,upper=1> mu_alpha=exp(mu_pr[5]);
+  real<lower=0,upper=1> mu_alpha=Phi_approx(mu_pr[5]);
   
 
   // Log-likelihood for model fit
