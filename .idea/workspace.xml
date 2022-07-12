@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_analysis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bart_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bart_simulation_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_simulation_main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +27,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../moment_neural_network" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.bart_analysis">
+  <component name="RunManager" selected="Python.bart_simulation_main">
     <configuration name="RL_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="bart" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -117,8 +118,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.bart_analysis" />
         <item itemvalue="Python.bart_simulation_main" />
+        <item itemvalue="Python.bart_analysis" />
         <item itemvalue="Python.bart_plot" />
         <item itemvalue="Python.RL_model" />
       </list>
@@ -137,7 +138,7 @@
       <workItem from="1654229194356" duration="22780000" />
       <workItem from="1656404014642" duration="20981000" />
       <workItem from="1657006091348" duration="7812000" />
-      <workItem from="1657203342701" duration="29461000" />
+      <workItem from="1657203342701" duration="33131000" />
     </task>
     <servers />
   </component>
