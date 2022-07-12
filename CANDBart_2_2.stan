@@ -85,7 +85,7 @@ model {
       real temp_0;
       real temp_1;
       real temp_2;
-      
+      RPE=0;
 
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
       temp_0 = C * lambda[j] * exp(RPE) * p_burst - C * log1m(p_burst) - B * inv(lambda[j]) / exp(RPE);
