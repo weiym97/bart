@@ -1361,6 +1361,106 @@ class CANDBart_1():
         else:
             return neg_log_likelihoods
 
+
+class CANDBart_2():
+    def __init__(self, max_pump, explode_prob, accu_reward, num_trial=50, A=0.04355644, B=-0.0988012, C=0.02832168):
+        self.max_pump = max_pump
+        self.explode_prob = explode_prob
+        self.accu_reward = accu_reward
+        self.reward = np.diff(accu_reward)
+        self.num_trial = num_trial
+        self.A = A
+        self.B = B
+        self.C = C
+
+    def generate_data(self, psi, xi, gamma, tau, alpha, return_omega=False):
+        pumps = np.zeros(self.num_trial)
+        explode = np.zeros(self.num_trial)
+        # Record total pumps and successful pumps
+        n_success = 0
+        n_pumps = 0
+        RPE = 0
+        if return_omega:
+            omega_history = np.zeros(self.num_trial)
+        for i in range(self.num_trial):
+            # Calculate the optimal number of pumps
+            p_burst = np.exp(-xi * n_pumps) * psi + (1 - np.exp(-xi * n_pumps)) * (n_pumps - n_success) / (
+                    n_pumps + 1e-5)
+
+            temp_0 = self.C * np.exp(RPE) * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1 = self.B * np.exp(RPE) * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2 = self.A * np.exp(RPE) * p_burst - self.A * np.log(1 - p_burst)
+
+            optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            if return_omega:
+                omega_history[i] = optimal_pump
+
+            ### probability of burst
+            burst = (self.explode_prob > np.random.uniform())
+            for j in range(self.max_pump):
+                # Subject probability of pump
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump - 0.5)))
+                pump = int(np.random.binomial(1, p_pump, 1)) > 0
+                if not pump:
+                    pumps[i] = j
+                    explode[i] = 0
+                    break
+                elif burst[j]:
+                    pumps[i] = j + 1
+                    explode[i] = 1
+                    break
+            n_success += pumps[i] - explode[i]
+            n_pumps += pumps[i]
+
+            RPE += alpha * ((self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i])- RPE)
+        if return_omega:
+            return pumps.astype(np.int32), explode.astype(np.int32), omega_history
+        else:
+            return pumps.astype(np.int32), explode.astype(np.int32)
+
+    def compute_likelihood(self, psi, xi, gamma, tau, alpha, pumps, explosion, return_omega=False):
+        num_trial = len(pumps)
+        neg_log_likelihoods = np.zeros(num_trial)
+        n_success = 0
+        n_pumps = 0
+        RPE = 0
+        if return_omega:
+            omega_history = np.zeros(num_trial)
+        for i in range(num_trial):
+            # Calculate the optimal number of pumps
+            p_burst = np.exp(-xi * n_pumps) * psi + (1 - np.exp(-xi * n_pumps)) * (n_pumps - n_success) / (
+                    n_pumps + 1e-5)
+            temp_0 = self.C * np.exp(RPE) * p_burst - self.C * np.log(1 - p_burst) - self.B * gamma
+            temp_1 = self.B * np.exp(RPE) * p_burst - 2 * self.A * gamma - self.B * np.log(1 - p_burst)
+            temp_2 = self.A * np.exp(RPE) * p_burst - self.A * np.log(1 - p_burst)
+
+            optimal_pump = (- temp_1 + np.sqrt(temp_1 ** 2 - 4 * temp_0 * temp_2)) / (2 * temp_2)
+            #print('optimal_pump:', optimal_pump)
+            if return_omega:
+                omega_history[i] = optimal_pump
+            neg_log_likelihood = 0
+            for j in range(int(pumps[i] + 1 - explosion[i])):
+                p_pump = 1 / (1 + np.exp(tau * (j + 1 - optimal_pump - 0.5)))
+                if j == pumps[i]:
+                    neg_log_likelihood -= np.log(1 - p_pump)
+                    #print('j= ',j,' neg_log_likelihood: ', neg_log_likelihood)
+                else:
+                    neg_log_likelihood -= np.log(p_pump)
+                    #print('j= ',j,' neg_log_likelihood: ', neg_log_likelihood)
+            neg_log_likelihoods[i] = neg_log_likelihood
+            n_success += pumps[i] - explosion[i]
+            n_pumps += pumps[i]
+
+            RPE += alpha * ((self.accu_reward[int(pumps[i])] - (self.A * optimal_pump ** 2 + self.B * optimal_pump + self.C)) * (1 - explode[i])- RPE)
+            #if i == 2:
+            #    raise ValueError('For test!')
+
+        if return_omega:
+            return neg_log_likelihoods, omega_history
+        else:
+            return neg_log_likelihoods
+
+
 if __name__ == '__main__':
     accu_reward = np.array([0.0, 0.0, 0.05, 0.15, 0.25, 0.55, 0.95, 1.45, 2.05, 2.75, 3.45, 4.25, 5.15, 6.0])
     explode_prob = np.array([0, 0.021, 0.042, 0.063, 0.146, 0.239, 0.313, 0.438, 0.563, 0.688, 0.792, 0.896, 1.0])

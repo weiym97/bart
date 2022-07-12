@@ -80,6 +80,8 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
         model = PTBart_final_2(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     elif model_name == 'CANDBart_1':
         model = CANDBart_1(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
+    elif model_name == 'CANDBart_2':
+        model = CANDBart_2(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     elif model_name == 'FourparamBart':
         model = FourparamBart(max_pump=max_pump, accu_reward=accu_reward, explode_prob=explode_prob, num_trial=trial_per_subj)
     elif model_name == 'EWBart':
@@ -130,6 +132,13 @@ def model_simulation_main(model_name,accu_reward, explode_prob, max_pump, params
                                                   xi=params['xi'][i],
                                                   gamma=params['gamma'][i],
                                                   tau=params['tau'][i],
+                                                  )
+        elif model_name == 'CANDBart_2':
+            pumps,explosion = model.generate_data(psi=params['psi'][i],
+                                                  xi=params['xi'][i],
+                                                  gamma=params['gamma'][i],
+                                                  tau=params['tau'][i],
+                                                  alpha=params['alpha'][i],
                                                   )
         elif model_name == 'FourparamBart':
             pumps,explosion = model.generate_data(phi=params['phi'][i],
@@ -437,6 +446,8 @@ if __name__ == '__main__':
     '''
 
     ##################################################################################################
+    ### Simulation for CANDBart_1
+    '''
     random_seed=int(time.time())
     np.random.seed(random_seed)
     psi = np.random.uniform(0.04, 0.12, size=n_simu_subj)
@@ -455,3 +466,27 @@ if __name__ == '__main__':
                            'seed':random_seed})
     data_dir = 'data/simulation/'
     model_simulation_main('CANDBart_1',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
+    '''
+    #####################################################################################################################
+    ### Simulation for CANDBart_2
+    random_seed=int(time.time())
+    np.random.seed(random_seed)
+    psi = np.random.uniform(0.04, 0.12, size=n_simu_subj)
+    xi = 10 ** np.random.uniform(-3, -2, size=n_simu_subj)
+    gamma = np.random.uniform(0.2, 0.45, size=n_simu_subj)
+    tau = np.random.uniform(0.8, 2.5, size=n_simu_subj)
+    alpha = np.random.uniform(0.0,0.25,size=n_simu_subj)
+    np.random.shuffle(psi)
+    np.random.shuffle(xi)
+    np.random.shuffle(gamma)
+    np.random.shuffle(tau)
+    np.random.shuffle(alpha)
+    params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
+                           'psi': psi,
+                           'xi': xi,
+                           'gamma': gamma,
+                           'tau': tau,
+                           'alpha':alpha,
+                           'seed':random_seed})
+    data_dir = 'data/simulation/'
+    model_simulation_main('CANDBart_2',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
