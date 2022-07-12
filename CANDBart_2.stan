@@ -91,6 +91,7 @@ model {
       temp_1 = 2 * B * p_burst - 2 * A * gamma[j] * exp(-RPE);
       temp_2 = 2 * A * p_burst;
       omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
+      print(omega)
       
       
 
