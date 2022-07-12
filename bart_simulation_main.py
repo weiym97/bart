@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pandas as pd
 
@@ -435,14 +437,21 @@ if __name__ == '__main__':
     '''
 
     ##################################################################################################
-    psi = np.random.uniform(0.04, 0.1, size=n_simu_subj)
+    random_seed=int(time.time())
+    np.random.seed(random_seed)
+    psi = np.random.uniform(0.04, 0.12, size=n_simu_subj)
     xi = 10 ** np.random.uniform(-3, -2, size=n_simu_subj)
-    gamma = np.random.uniform(0.25, 0.6, size=n_simu_subj)
+    gamma = np.random.uniform(0.2, 0.45, size=n_simu_subj)
     tau = np.random.uniform(0.8, 2.5, size=n_simu_subj)
+    np.random.shuffle(psi)
+    np.random.shuffle(xi)
+    np.random.shuffle(gamma)
+    np.random.shuffle(tau)
     params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
                            'psi': psi,
                            'xi': xi,
                            'gamma': gamma,
-                           'tau': tau})
+                           'tau': tau,
+                           'seed':random_seed})
     data_dir = 'data/simulation/'
     model_simulation_main('CANDBart_1',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
