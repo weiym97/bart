@@ -78,7 +78,6 @@ model {
     real B = -0.0988012;
     real C = 0.02832168;
     real RPE = 0;
-    print("Subj= ",j)
 
     for (k in 1:Tsubj[j]) {
       real p_burst;  // Belief on a balloon to be burst
@@ -87,15 +86,11 @@ model {
       real temp_1;
       real temp_2;
 
-      print("RPE= ",RPE)
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-      print("p_burst= ",p_burst)
-      print("gamma= ",gamma[j])
-      temp_0 = 2 * C * p_burst - B * gamma[j] * exp(-RPE);
-      temp_1 = 2 * B * p_burst - 2 * A * gamma[j] * exp(-RPE);
-      temp_2 = 2 * A * p_burst;
+      temp_0 = C * exp(RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
+      temp_1 = B * exp(RPE) * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
+      temp_2 = A * exp(RPE) * p_burst- A * log1m(p_burst);
       omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
-      print("omega= ",omega)
       
       
 
@@ -154,9 +149,9 @@ generated quantities {
         real temp_2;
 
         p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-        temp_0 = 2 * C * p_burst - B * gamma[j] * exp(-RPE);
-        temp_1 = 2 * B * p_burst - 2 * A * gamma[j] * exp(-RPE);
-        temp_2 = 2 * A * p_burst;
+        temp_0 = C * exp(RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
+        temp_1 = B * exp(RPE) * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
+        temp_2 = A * exp(RPE) * p_burst- A * log1m(p_burst);
         omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
         
 
