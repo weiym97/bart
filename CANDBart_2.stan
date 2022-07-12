@@ -78,6 +78,8 @@ model {
     real B = -0.0988012;
     real C = 0.02832168;
     real RPE = 0;
+    print("Subj=")
+    print(j)
 
     for (k in 1:Tsubj[j]) {
       real p_burst;  // Belief on a balloon to be burst
@@ -86,11 +88,14 @@ model {
       real temp_1;
       real temp_2;
 
+      print("RPE=")
+      print(RPE)
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
       temp_0 = 2 * C * p_burst - B * gamma[j] * exp(-RPE);
       temp_1 = 2 * B * p_burst - 2 * A * gamma[j] * exp(-RPE);
       temp_2 = 2 * A * p_burst;
       omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
+      print("omega=")
       print(omega)
       
       
