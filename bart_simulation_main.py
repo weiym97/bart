@@ -356,7 +356,7 @@ if __name__ == '__main__':
     '''
     ########################################################################################################
     ### Simulation of Four parameter model
-
+    '''
     phi = np.random.uniform(0.88,0.94,size=n_simu_subj)
     eta = 10 ** np.random.uniform(-3, -1.5, size=n_simu_subj)
     gamma = np.random.uniform(0.35,0.6,size=n_simu_subj)
@@ -369,7 +369,7 @@ if __name__ == '__main__':
                            })
     data_dir = 'data/simulation/'
     model_simulation_main('FourparamBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
-    
+    '''
 
 
     ##########################################################################################################
@@ -477,6 +477,10 @@ if __name__ == '__main__':
     gamma = np.random.uniform(0.2, 0.45, size=n_simu_subj)
     tau = np.random.uniform(0.8, 2.5, size=n_simu_subj)
     alpha = np.random.uniform(0.0,0.25,size=n_simu_subj)
+    ### For new simulation in the case of large tau
+    #tau = np.random.uniform(2.5, 3.5, size=n_simu_subj)
+    #alpha = np.random.uniform(0.0,1.0,size=n_simu_subj)
+
     np.random.shuffle(psi)
     np.random.shuffle(xi)
     np.random.shuffle(gamma)
