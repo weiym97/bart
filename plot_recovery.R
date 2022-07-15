@@ -1,4 +1,5 @@
 rm(list=ls())
+args <- commandArgs(trailingOnly = TRUE)
 
 return_param <- function(model_name){
   params=switch(EXPR=model_name,
