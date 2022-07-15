@@ -43,7 +43,7 @@ stat_sim <- read.csv(paste('data/simulation/',data_name,'_statistics.csv',sep=''
 stat_recov <- read.table(paste('fit_result/summary_',model_name,'_',data_name,'.txt',sep=''),header=T)
 
 params=return_param(model_name)
-for (i in length(params)){
+for (i in 1:length(params)){
   jpeg(paste(file_name='plot_result/',model_name,'_',data_name,'_',params[i],'.jpg',sep=''))
   plot(stat_sim[,params[i]],stat_recov[,params[i]],xlab='True',ylab='Recovery',main=paste(params[i],'correlation=',cor(stat_sim[,params[i]],stat_recov[,params[i]])))
   dev.off()
