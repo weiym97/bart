@@ -3,7 +3,7 @@
 ###########################
 rm(list=ls())
 #args <- commandArgs(trailingOnly = TRUE)
-args <- c('simulation','EWBart','EWBart_simulation_Liu')
+#args <- c('simulation','EWBart','EWBart_simulation_Liu')
 
 preprocessing <- function(data){
   # Only preserve trials with pump number no less than 2
