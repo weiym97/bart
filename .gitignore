@@ -46,6 +46,7 @@ vignettes/*.pdf
 *.rds
 *.OU
 *.json
+*.jpg
 
 *Pycharm configuration
 .idea
