@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bart_simulation_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bart_simulation_main.py" afterDir="false" />
-    </list>
+    <list default="true" id="5bf23f08-42f8-4c7b-b577-7d5c305257d2" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,7 +20,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../moment_neural_network" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunManager" selected="Python.bart_simulation_main">
@@ -140,6 +137,7 @@
       <workItem from="1657203342701" duration="40229000" />
       <workItem from="1657857463732" duration="3496000" />
       <workItem from="1663854805303" duration="1661000" />
+      <workItem from="1663900776117" duration="338000" />
     </task>
     <servers />
   </component>
