@@ -178,8 +178,8 @@ if __name__ == '__main__':
     max_pump = 13
 
     # Totally, we simulation n_simu_subj subjects, but we cut them into n_fit_per_run to run parallelly
-    n_simu_subj = 500
-    n_fit_per_run = 50
+    n_simu_subj = 200
+    n_fit_per_run = 200
 
 
     ##################################################################
@@ -496,3 +496,31 @@ if __name__ == '__main__':
     data_dir = 'data/simulation/'
     model_simulation_main('CANDBart_2',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
     '''
+
+    ###############################################################################################################
+    # Simulation for Liu's paper
+    parameter_group_result = pd.read_csv('ParameterRecoveryLiu/posterior_group_result.txt')
+    print(parameter_group_result)
+    print(parameter_group_result.iloc[0])
+
+    ### Group 1
+    psi = np.random.gamma(shape=parameter_group_result.iloc[0,1],scale=1/parameter_group_result.iloc[1,1],size=n_simu_subj)
+    xi = np.random.gamma(shape=parameter_group_result.iloc[2,1],scale=1/parameter_group_result.iloc[3,1],size=n_simu_subj)
+    rho = np.random.gamma(shape=parameter_group_result.iloc[4,1],scale=1/parameter_group_result.iloc[5,1],size=n_simu_subj)
+    Lambda = np.random.gamma(shape=parameter_group_result.iloc[6,1],scale=1/parameter_group_result.iloc[7,1],size=n_simu_subj)
+    tau = np.random.gamma(shape=parameter_group_result.iloc[8,1],scale=1/parameter_group_result.iloc[9,1],size=n_simu_subj)
+
+    psi = np.clip(psi,0.0,1.0)
+    rho = np.clip(rho,0.0,2.0)
+
+    params = pd.DataFrame({'subjID': np.arange(n_simu_subj) + 10001,
+                           'psi': psi,
+                           'xi': xi,
+                           'rho': rho,
+                           'lambda':Lambda,
+                           'tau': tau
+                           })
+    data_dir = 'E:/bart/ParameterRecoveryLiu/data/simulation/'
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+    model_simulation_main('EWBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
