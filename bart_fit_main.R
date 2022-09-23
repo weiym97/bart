@@ -2,7 +2,7 @@
 ### construct data
 ###########################
 rm(list=ls())
-#args <- commandArgs(trailingOnly = TRUE)
+args <- commandArgs(trailingOnly = TRUE)
 #args <- c('simulation','EWBart','EWBart_simulation_Liu')
 
 preprocessing <- function(data){
