@@ -891,7 +891,10 @@ class EWBart():
                 p_burst = np.exp(-xi * n_pumps_use) * psi + (1 - np.exp(-xi * n_pumps_use)) * p_temp
                 utility = (1 - p_burst) * self.reward[j] ** rho - p_burst * Lambda * (
                         2 * self.accu_reward[j]) ** rho
-                p_pump = 1 / (1 + np.exp(-tau * utility))
+                if j == 0:
+                    p_pump = 1.0
+                else:
+                    p_pump = 1 / (1 + np.exp(-tau * utility))
                 pump = int(np.random.binomial(1, p_pump, 1)) > 0
                 if not pump:
                     pumps[i] = j

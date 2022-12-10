@@ -499,6 +499,7 @@ if __name__ == '__main__':
 
     ###############################################################################################################
     # Simulation for Liu's paper
+    '''
     parameter_group_result = pd.read_csv('ParameterRecoveryLiu/posterior_group_result.txt')
     print(parameter_group_result)
     print(parameter_group_result.iloc[0])
@@ -523,4 +524,14 @@ if __name__ == '__main__':
     data_dir = 'E:/bart/ParameterRecoveryLiu/data/simulation/'
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
+    model_simulation_main('EWBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
+    '''
+    data_dir = 'E:/bart/ParameterRecoveryLiu/data/simulation/'
+    params = pd.DataFrame({'subjID': ['0000'],
+                           'psi': [0.07145517],
+                           'xi': [0.000683346],
+                           'rho': [0.181051725],
+                           'lambda':[23.35853034],
+                           'tau': [13.29562296]
+                           })
     model_simulation_main('EWBart',accu_reward, explode_prob, max_pump, params, data_dir, n_simu_subj, n_fit_per_run)
