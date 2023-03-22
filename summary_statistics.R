@@ -3,8 +3,8 @@ rm(list=ls())
 return_param <- function(model_name){
   params=switch(EXPR=model_name,
                 FourparamBart=c('phi','eta','gamma','tau'),
-                EWBart_1 = c('psi','xi','gamma','lambda','tau'),
-                EWMVBart_1 = c('psi','xi','gamma','lambda','tau'),
+                EWBart_1 = c('psi','xi','rho','lambda','tau'),
+                EWMVBart_1 = c('psi','xi','rho','lambda','tau'),
                 PTBart_9=c('psi','xi','gamma','tau','lambda'),
                 PTBart_10=c('psi','xi','gamma','tau','lambda'),
                 PTBart_20=c('psi','xi','lambda','tau'),
