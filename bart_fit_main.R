@@ -54,6 +54,8 @@ return_param <- function(model_name){
                 CANDBart_1=c('psi','xi','gamma','tau'),
                 CANDBart_2=c('psi','xi','gamma','tau','alpha'),
                 CANDBart_3=c('psi','xi','gamma','tau','alpha'),
+                FINALBart_1=c('psi','xi','gamma','tau'),
+                FINALBart_2=c('psi','xi','gamma','tau','alpha'),
                 STLBart = c('omega_0','vwin','vloss','tau'),
                 STLDBart = c('omega_0','vwin','vloss','alpha','tau'),
   )
