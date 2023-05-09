@@ -29,29 +29,36 @@ transformed data{
 
 parameters {
   // Group-level parameters
-  vector[4] mu_pr;
-  vector<lower=0>[4] sigma;
+  vector[5] mu_pr;
+  vector<lower=0>[5] sigma;
 
   // Normally distributed error for Matt trick
-  vector[N] psi_pr;
+  vector[N] psi_to_gamma_pr;
   vector[N] xi_pr;
   vector[N] gamma_pr;
   vector[N] tau_pr;
+  vector[N] alpha_pr;
   
 }
 
 transformed parameters {
   // Subject-level parameters with Matt trick
-  vector<lower=0,upper=1>[N] psi;
+  vector<lower=0>[N] psi_to_gamma;
   vector<lower=0>[N] xi;
   vector<lower=0,upper=2>[N] gamma;
   vector<lower=0>[N] tau;
+  vector<lower=0,upper=1>[N] alpha;
+  
+  vector<lower=0,upper=1>[N] psi;
   
 
-  psi = Phi_approx(mu_pr[1] + sigma[1] * psi_pr);
+  psi_to_gamma = exp(mu_pr[1] + sigma[1] * psi_to_gamma_pr);
   xi = exp(mu_pr[2] + sigma[2] * xi_pr);
   gamma = 2 * Phi_approx(mu_pr[3] + sigma[3] * gamma_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
+  alpha = Phi_approx(mu_pr[5] + sigma[5] * alpha_pr);
+  
+  psi = psi_to_gamma .* gamma;
 }
 
 model {
@@ -59,10 +66,11 @@ model {
   mu_pr  ~ normal(0, 1);
   sigma ~ normal(0, 0.2);
 
-  psi_pr ~ normal(0, 1);
+  psi_to_gamma_pr ~ normal(0, 1);
   xi_pr ~ normal(0, 1);
   gamma_pr ~ normal(0,1);
   tau_pr ~ normal(0, 1);
+  alpha_pr ~ normal(0,1);
 
   // Likelihood
   for (j in 1:N) {
@@ -73,6 +81,7 @@ model {
     real A = 0.04355644;
     real B = -0.0988012;
     real C = 0.02832168;
+    real RPE = 0;
 
     for (k in 1:Tsubj[j]) {
       real p_burst;  // Belief on a balloon to be burst
@@ -82,9 +91,9 @@ model {
       real temp_2;
 
       p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-      temp_0 = 2 * C * p_burst - B * gamma[j];
-      temp_1 = 2 * B * p_burst - 2 * A * gamma[j];
-      temp_2 = 2 * A * p_burst;
+      temp_0 = C * exp(RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
+      temp_1 = B * exp(RPE) * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
+      temp_2 = A * exp(RPE) * p_burst- A * log1m(p_burst);
       omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
       
       
@@ -96,16 +105,19 @@ model {
       // Update n_succ and n_pump after each trial ends
       n_succ += pumps[j, k] - explosion[j, k];
       n_pump += pumps[j, k];
+      
+      RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
     }
   }
 }
 
 generated quantities {
   // Actual group-level mean
-  real<lower=0, upper=1> mu_psi = Phi_approx(mu_pr[1]);
+  real<lower=0> mu_psi_to_gamma = mu_pr[1];
   real<lower=0> mu_xi = exp(mu_pr[2]);
   real<lower=0,upper=2> mu_gamma = 2 * Phi_approx(mu_pr[3]);
   real<lower=0> mu_tau = exp(mu_pr[4]);
+  real<lower=0,upper=1> mu_alpha=Phi_approx(mu_pr[5]);
   
 
   // Log-likelihood for model fit
@@ -129,6 +141,7 @@ generated quantities {
       real A = 0.04355644;
       real B = -0.0988012;
       real C = 0.02832168;
+      real RPE=0;
 
       log_lik[j] = 0;
 
@@ -140,11 +153,10 @@ generated quantities {
         real temp_2;
 
         p_burst = exp(-xi[j] * n_pump) * psi[j] + (1 - exp(-xi[j] * n_pump)) * ((n_pump - n_succ) / (n_pump + 1e-5));
-        temp_0 = 2 * C * p_burst - B * gamma[j];
-        temp_1 = 2 * B * p_burst - 2 * A * gamma[j];
-        temp_2 = 2 * A * p_burst;
+        temp_0 = C * exp(RPE) * p_burst - C * log1m(p_burst) - B * gamma[j];
+        temp_1 = B * exp(RPE) * p_burst - 2 * A * gamma[j] - B * log1m(p_burst);
+        temp_2 = A * exp(RPE) * p_burst- A * log1m(p_burst);
         omega = (- temp_1 + sqrt(temp_1 * temp_1 - 4 * temp_0 * temp_2)) / (2 * temp_2);
-
         
 
         for (l in 1:L[j,k]) {
@@ -154,6 +166,8 @@ generated quantities {
 
         n_succ += pumps[j, k] - explosion[j, k];
         n_pump += pumps[j, k];
+        
+        RPE += alpha[j] * ((r_accu[pumps[j,k] + 1] - (A * omega ^ 2 + B * omega + C)) * (1 - explosion[j,k])- RPE);
       }
     }
   }

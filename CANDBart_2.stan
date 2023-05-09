@@ -60,7 +60,7 @@ transformed parameters {
 model {
   // Prior
   mu_pr  ~ normal(0, 1);
-  sigma ~ normal(0, 5);
+  sigma ~ normal(0, 0.2);
 
   psi_pr ~ normal(0, 1);
   xi_pr ~ normal(0, 1);
