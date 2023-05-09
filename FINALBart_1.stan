@@ -49,7 +49,7 @@ transformed parameters {
   vector<lower=0,upper=1>[N] psi;
   
 
-  psi_to_gamma = mu_pr[1] + sigma[1] * psi_to_gamma_pr;
+  psi_to_gamma = exp(mu_pr[1] + sigma[1] * psi_to_gamma_pr);
   xi = exp(mu_pr[2] + sigma[2] * xi_pr);
   gamma = 2 * Phi_approx(mu_pr[3] + sigma[3] * gamma_pr);
   tau = exp(mu_pr[4] + sigma[4] * tau_pr);
@@ -59,7 +59,7 @@ transformed parameters {
 model {
   // Prior
   mu_pr  ~ normal(0, 1);
-  sigma ~ normal(0, 5);
+  sigma ~ normal(0, 0.2);
 
   psi_to_gamma_pr ~ normal(0, 1);
   xi_pr ~ normal(0, 1);
