@@ -9,11 +9,11 @@ library("hBayesDM")
 
 #cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
-cat("Calling", nChains, "simulations in Stan... \n")
+cat("Calling 4 simulations in Stan... \n")
 output = bart_par4(data=paste('data/',data_type,'/',data_file_name,'.txt',sep=''), 
                      niter=2000, nwarmup=1000, nchain=4, ncore=4)
 
-cat("Finishing", modelFile, "model simulation ... \n")
+#cat("Finishing", modelFile, "model simulation ... \n")
 endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
