@@ -7,7 +7,7 @@ data_file_name <- args[3]
 
 library("hBayesDM")
 
-cat("Estimating", modelFile, "model... \n")
+#cat("Estimating", modelFile, "model... \n")
 startTime = Sys.time(); print(startTime)
 cat("Calling", nChains, "simulations in Stan... \n")
 output = bart_par4(data=paste('data/',data_type,'/',data_file_name,'.txt',sep=''), 
