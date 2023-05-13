@@ -19,9 +19,9 @@ cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
 fit <- output$fit
-save(output,file=paste('fit_result_Ji/',model_name,'_',data_file_name,'.Rdata',sep=''))
+save(fit,file=paste('fit_result_Ji/',model_name,'_',data_file_name,'.Rdata',sep=''))
 
 param_name <- c('phi','eta','gam','tau')
-result_summary<-as.data.frame(rstan::summary(output,pars=param_name)$summary)
+result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
 posterior_mean <- extract_posterior(subjs,result_summary)
 write.table(posterior_mean,paste('fit_result_Ji/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
