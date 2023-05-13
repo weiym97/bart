@@ -147,10 +147,10 @@ endTime = Sys.time(); print(endTime)
 cat("It took",as.character.Date(endTime - startTime), "\n")
 
 # save the result
-save(fit,file=paste('fit_result_20230509/',model_name,'_',data_file_name,'.Rdata',sep=''))
+save(fit,file=paste('fit_result_Ji/',model_name,'_',data_file_name,'.Rdata',sep=''))
 
 param_name <- return_param(model_name)
 result_summary<-as.data.frame(rstan::summary(fit,pars=param_name)$summary)
 posterior_mean <- extract_posterior(subjs,result_summary)
-write.table(posterior_mean,paste('fit_result_20230509/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
+write.table(posterior_mean,paste('fit_result_Ji/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
 
