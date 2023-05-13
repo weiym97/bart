@@ -1,6 +1,20 @@
 rm(list=ls())
 args <- commandArgs(trailingOnly = TRUE)
 
+extract_posterior <- function(subjs,result){
+  n_subj <- length(subjs)
+  param_name <- unique(gsub("\\[.*","",x=row.names(result)))
+  posterior <-data.frame(matrix(ncol=length(param_name)+1,nrow=n_subj, dimnames=list(NULL, c('subjID',param_name))))
+  for (i in 1:n_subj) {
+    posterior[i,'subjID'] <- subjs[i]
+    for (j in 1:length(param_name)){
+      temp_name <- paste(param_name[j],'[',i,']',sep='')
+      posterior[i,param_name[j]] = result[temp_name,'mean']
+    }
+  }
+  return(posterior)
+}
+
 data_type <- args[1]
 model_name <- args[2]
 data_file_name <- args[3]
