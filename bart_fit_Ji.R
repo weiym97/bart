@@ -1,0 +1,26 @@
+rm(list=ls())
+args <- commandArgs(trailingOnly = TRUE)
+
+data_type <- args[1]
+model_name <- args[2]
+data_file_name <- args[3]
+
+library("hBayesDM")
+
+cat("Estimating", modelFile, "model... \n")
+startTime = Sys.time(); print(startTime)
+cat("Calling", nChains, "simulations in Stan... \n")
+output = bart_par4(data=paste('data/',data_type,'/',data_file_name,'.txt',sep=''), 
+                     niter=2000, nwarmup=1000, nchain=4, ncore=4)
+
+cat("Finishing", modelFile, "model simulation ... \n")
+endTime = Sys.time(); print(endTime)
+cat("It took",as.character.Date(endTime - startTime), "\n")
+
+# save the result
+save(output,file=paste('fit_result_Ji/',model_name,'_',data_file_name,'.Rdata',sep=''))
+
+param_name <- c('phi','eta','gamma','tau')
+result_summary<-as.data.frame(rstan::summary(output,pars=param_name)$summary)
+posterior_mean <- extract_posterior(subjs,result_summary)
+write.table(posterior_mean,paste('fit_result_Ji/summary_',model_name,'_',data_file_name,'.txt',sep=''),quote=F,row.names=F)
