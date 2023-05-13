@@ -2,6 +2,7 @@
 ### construct data
 ###########################
 rm(list=ls())
+#Sys.setenv(CXX ="/public/software/compiler/gcc/7.3.1/bin/gcc")
 args <- commandArgs(trailingOnly = TRUE)
 #args <- c('simulation','EWBart','EWBart_simulation_Liu')
 
